@@ -16,7 +16,7 @@ fits the stock case and the stock key-matrix cable.
 | J5 | USB-C, upstream to the PC | Keep (position) |
 | J2, J3 | USB 3.0 Type-A | Keep (position), USB 2.0 is fine |
 | J4 | 26-pin connector to the key-switch PCB (bottom side) | Keep (position + pinout TBD) |
-| P1 | Rotary encoder with push switch (volume knob) | Keep |
+| P1 | Rotary encoder, no push switch, 20 detents (5 per quarter turn) | Keep |
 | SW1–SW5 | Tact switches | Keep, each on its own GPIO |
 | NUM / CAPS / SCROLL | 5 mm THT LEDs | Keep |
 | GND/CLK/DIO/5V pads | SWD programming header for U4 | Replace with our own SWD pads |
@@ -28,7 +28,7 @@ PC ──USB-C──► USB 2.0 hub ──► USB-A port 1
                          ├──► USB-A port 2
                          └──► RP2350B (USB HID keyboard + media keys)
                                  ├─ 26 × key matrix (J4)
-                                 ├─ encoder A/B + push
+                                 ├─ encoder A/B
                                  ├─ 5 × buttons
                                  └─ 3 × lock LEDs
 ```
@@ -42,10 +42,10 @@ dev board's own USB-C), the USB-A ports would have nowhere to get data from.
 | Function | Pins |
 |---|---|
 | Key matrix via J4 (if all 26 are matrix lines) | 26 |
-| Encoder: A, B, push | 3 |
+| Encoder: A, B | 2 |
 | Buttons | 5 |
 | Lock LEDs | 3 |
-| **Total** | **37** |
+| **Total** | **36** |
 
 - Seeed XIAO: 11 GPIO, so it doesn't fit.
 - Raspberry Pi Pico / Pico 2: 26, so it doesn't fit without an expander.
@@ -56,7 +56,7 @@ tiny SMD part. So the whole board is factory-assembled (e.g. JLCPCB PCBA)
 with a bare RP2350B, not a hand-soldered module.
 
 Fallback: a Pico 2 module plus a 16-bit I²C expander (e.g. TCA9555) for the
-buttons, LEDs and encoder push.
+buttons and LEDs.
 
 ## Part candidates (to verify: stock at JLCPCB/LCSC, datasheet footprints)
 
@@ -68,7 +68,7 @@ buttons, LEDs and encoder push.
 | USB-A power | Current-limit switch or polyfuse per port | 500 mA per port |
 | USB-C | HRO TYPE-C-31-M-12 | 5.1 kΩ CC pull-downs (upstream-facing port) |
 | USB-A | Molex 67643 or a JLC-stocked equivalent | THT, ~7 mm tall |
-| Encoder | Bourns PEC12R-42xxF-S0024 (or an Alps EC12E clone) | 6 mm D-shaft, push switch, 24 detents. `xx` = shaft length, TBD |
+| Encoder | 12 mm body, 6 mm D-shaft, **no switch**, 20 detents (original). Bourns PEC12R-42xxF-N0024 is the closest Bourns part (24 detents) | A push switch doesn't fit: the body sits flush with the board edge, so the switch pins would land off the board. Use a button for mute |
 | Buttons | 6 × 6 mm SMD tact | Heights to match the case |
 | LEDs | 5 mm THT, clear lens | ~9 mm standoff height |
 | Boot/reset | Small SMD tacts for BOOTSEL + RUN, or reuse SW4 as BOOTSEL | Needed to flash firmware |

@@ -70,7 +70,7 @@ Change them there and regenerate.
 ## Still to measure
 
 1. **J4:** pin pitch, one or two rows, and the connector type (header? FFC?). What plugs into it?
-2. **Encoder:** shaft length from the PCB surface, and clicks per full turn (12 or 24?).
+2. **Encoder:** shaft length from the PCB surface. Clicks: 5 per quarter turn, so 20 per full turn (confirm by counting a full turn). No push switch.
 3. **Mounting holes:** real diameters and caliper positions.
 4. Anything above that's marked *photo* and has to fit the case exactly: the USB port positions and the outline steps.
 
