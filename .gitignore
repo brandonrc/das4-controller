@@ -5,3 +5,11 @@ fp-info-cache
 _autosave-*
 *.lck
 __pycache__/
+.deps/
+*.net.bak
+# SKiDL run artefacts
+*.erc
+*.log
+*_sklib.py
+# STEP models are 35 MB; renders use the .wrl files. `make parts` re-fetches them.
+hardware/lib/jlc.3dshapes/*.step

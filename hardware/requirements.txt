@@ -1,0 +1,2 @@
+skidl==2.3.0
+easyeda2kicad==1.0.1

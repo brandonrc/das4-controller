@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Regenerate board, renders and fit-check PDF
+      - name: Circuit -> netlist -> board, renders and fit-check PDF
         run: make board docs
 
       # Draft stage: DRC is informational until the schematic exists.
@@ -27,3 +27,4 @@ jobs:
             build/drc.rpt
             docs/fit-check-1to1.pdf
             docs/render-*.png
+            hardware/das4-controller.net

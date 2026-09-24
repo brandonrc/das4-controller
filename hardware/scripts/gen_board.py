@@ -1,24 +1,35 @@
 #!/usr/bin/env python3
-"""Generate the draft das4-controller board: outline, mounting holes, and
-placeholder footprints for everything that has to line up with the case.
+"""Build the das4-controller board from the SKiDL netlist.
 
-All positions live in the tables below, in millimetres, measured from the
-bottom-left corner of the main body with +Y pointing *up* (USB-C end is "top",
-knob end is "bottom", USB-A ports face right). Fix a number, re-run, done:
+    make board        # netlist -> hardware/das4-controller.kicad_pcb
 
-    distrobox enter pcb -- python3 hardware/scripts/gen_board.py
+What it does:
+  1. draws the measured outline and mounting holes
+  2. loads every part in hardware/das4-controller.net with its footprint,
+     LCSC number and net connections
+  3. places the parts that have to line up with the case (MECH) at their
+     measured positions, and everything else in rough groups (GROUPS)
+  4. anything not listed lands in a staging area to the right of the board
 
-Numbers marked (photo) were traced from a top-down photo scaled so the main
-body is 83.9 mm long; expect +/-1-2 mm until they are replaced by caliper
-measurements. See docs/measurements.md.
+Coordinates are millimetres from the bottom-left corner of the main body,
++Y up (USB-C end is "top", knob end is "bottom", USB-A ports face right).
+Numbers marked (photo) come from photos/prints, see docs/measurements.md.
+
+The board is generated: while placement is still moving, change the tables
+here, not the .kicad_pcb, or the next `make` overwrites your edits.
 """
-import math
 import os
+import re
+
 import pcbnew
 
+from netlist import NETLIST, read_netlist
+
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "..", "das4-controller.kicad_pcb")
-FP = "/usr/share/kicad/footprints/"
+HW = os.path.dirname(HERE)
+OUT = os.path.join(HW, "das4-controller.kicad_pcb")
+LIBS = {"jlc": os.path.join(HW, "lib", "jlc.pretty")}
+KICAD_FP = os.environ.get("KICAD_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
 
 # KiCad page position of our (0, 0); KiCad Y grows downward, ours grows up.
 OX, OY = 100.0, 150.0
@@ -45,37 +56,72 @@ NOTCH_LEN, NOTCH_DEPTH = 9.35, 3.5  # notch opening along the edge / cut depth (
 # --- Mounting holes (photo) -----------------------------------------------
 HOLES = [("H1", 22.6, 57.5), ("H2", 26.4, 18.6), ("H3", -4.6, 19.9)]
 
-# --- Parts ----------------------------------------------------------------
-# (ref, value, lib, footprint, rotation, side, anchor, x, y)
-# anchor says which point of the footprint's courtyard lands on (x, y):
-#   "center", "top" (top edge, centred), "right" (right edge, centred)
-PARTS = [
-    ("J1", "USB-C (upstream, USB 2.0)", "Connector_USB",
-     "USB_C_Receptacle_HRO_TYPE-C-31-M-12", 180, "F", "top", 23.9, 90.2),
-    ("J2", "USB-A (hub port 1)", "Connector_USB",
-     "USB_A_Molex_67643_Horizontal", 90, "F", "right", 49.4, 37.4),
-    ("J3", "USB-A (hub port 2)", "Connector_USB",
-     "USB_A_Molex_67643_Horizontal", 90, "F", "right", 49.4, 18.4),
-    ("J4", "Key matrix 26p (TBD: pitch/type)", "Connector_PinSocket_1.00mm",
-     "PinSocket_1x26_P1.00mm_Vertical", 0, "B", "center", 34.6, 63.8),
-    ("ENC1", "Volume encoder, no switch, 20 detents", "Rotary_Encoder",
-     "RotaryEncoder_Alps_EC12E_Vertical_H20mm", -90, "F", "shaft", 10.0, 5.8),
-    ("SW1", "Button", "Button_Switch_SMD",
-     "SW_Push_1TS009xxxx-xxxx-xxxx_6x6x5mm", 90, "F", "center", 3.2, 70.8),
-    ("SW2", "Button", "Button_Switch_SMD",
-     "SW_Push_1TS009xxxx-xxxx-xxxx_6x6x5mm", 90, "F", "center", 3.3, 54.0),
-    ("SW3", "Button", "Button_Switch_SMD",
-     "SW_Push_1TS009xxxx-xxxx-xxxx_6x6x5mm", 90, "F", "center", 3.4, 37.1),
-    ("SW4", "Button", "Button_Switch_SMD",
-     "SW_Push_1TS009xxxx-xxxx-xxxx_6x6x5mm", 90, "F", "center", 19.7, 75.4),
-    ("SW5", "Button", "Button_Switch_SMD",
-     "SW_Push_1TS009xxxx-xxxx-xxxx_6x6x5mm", 90, "F", "center", 20.0, 32.0),
-    ("D1", "NUM", "LED_THT", "LED_D5.0mm", 0, "F", "led", 16.9, 63.1),
-    ("D2", "CAPS", "LED_THT", "LED_D5.0mm", 0, "F", "led", 16.9, 54.0),
-    ("D3", "SCROLL", "LED_THT", "LED_D5.0mm", 0, "F", "led", 16.9, 44.5),
-]
+# --- Parts that must line up with the case ---------------------------------
+# ref: (rotation, side, anchor, x, y). The anchor says which point of the
+# footprint lands on (x, y): "center" (courtyard centre), "top"/"right"
+# (that courtyard edge, i.e. a connector's mouth), "shaft" (encoder shaft,
+# midway between its mounting lugs), "pads" (centre of all pads).
+MECH = {
+    "J1": (180, "F", "top", 23.9, 89.4),      # USB-C mouth 1.4 mm past the tab (photo: ~2; front legs vs edge)
+    "J2": (90, "F", "right", 49.4, 37.0),     # USB-A 1 (photo: 37.4; shell leg vs edge)
+    "J3": (90, "F", "right", 49.4, 18.4),     # USB-A 2 (photo)
+    "J4": (0, "B", "center", 34.6, 63.8),     # key matrix, bottom side (photo)
+    "ENC1": (180, "F", "shaft", 10.0, 5.8),   # volume knob (fit-check print)
+    "SW1": (90, "F", "center", 3.35, 70.8),
+    "SW2": (90, "F", "center", 3.3, 54.0),
+    "SW3": (90, "F", "center", 3.4, 37.1),
+    "SW4": (90, "F", "center", 19.7, 75.0),   # photo: 75.4; clears USB-C pins
+    "SW5": (90, "F", "center", 20.0, 32.0),
+    "D1": (0, "F", "pads", 16.9, 63.1),       # NUM
+    "D2": (0, "F", "pads", 16.9, 54.0),       # CAPS
+    "D3": (0, "F", "pads", 16.9, 44.5),       # SCROLL
+}
+
+# --- Everything else: rough groups (refine during routing) ------------------
+# ref: (x, y, rotation), all on the top side, centred on (x, y).
+GROUPS = {
+    # MCU block, lower middle. Its right/bottom edges (GPIO21-46) face J4/hub.
+    "U1": (11.0, 21.0, 0),                    # RP2350B
+    "U3": (11.5, 32.6, 90),                   # QSPI flash, above the MCU's QSPI pins
+    "C33": (14.2, 35.8, 0),
+    "R5": (8.2, 35.8, 0), "R6": (10.2, 35.8, 0),            # CS pull-up, BOOTSEL
+    "L1": (15.6, 28.2, 90),                    # core regulator inductor, by VREG_LX
+    "Y1": (20.6, 14.6, 0), "R4": (17.9, 14.9, 90),          # MCU crystal
+    "C31": (19.6, 12.2, 0), "C32": (21.8, 12.2, 0),
+    "SW6": (1.2, 17.5, 90), "SW7": (1.5, 26.5, 90),         # BOOTSEL, RESET (left edge)
+    "R7": (3.3, 30.0, 0),
+    "TP1": (7.8, 38.0, 0), "TP2": (10.5, 38.0, 0), "TP3": (13.2, 38.0, 0), "TP4": (15.9, 38.0, 0),
+    # Hub block, next to the USB-A ports
+    "U2": (29.5, 30.0, 90),                   # CH334R
+    "Y2": (27.0, 25.2, 0),
+    "C6": (31.2, 25.2, 90), "C7": (32.6, 25.2, 90), "C8": (30.0, 34.4, 0),
+    # USB-A 1 (J2): ESD, fuse, bulk
+    "U6": (30.8, 40.2, 90), "F1": (27.0, 43.4, 0), "C9": (31.0, 43.8, 0), "C10": (34.0, 43.8, 0),
+    # USB-A 2 (J3)
+    "U7": (30.8, 10.4, 90), "F2": (27.0, 6.4, 0), "C11": (31.0, 6.4, 0), "C12": (34.0, 6.4, 0),
+    # USB-C input, ESD, CC resistors, 3.3 V regulator
+    "U5": (24.9, 78.4, 0), "R1": (27.0, 79.6, 90), "R2": (28.0, 79.6, 90),
+    "U4": (31.3, 78.6, 0), "C1": (34.8, 78.6, 90), "C2": (29.8, 81.4, 0),
+    "C3": (32.2, 81.5, 0), "C4": (30.6, 75.6, 0), "C5": (27.6, 75.6, 0),
+    # Lock LED drivers, between the button column and the LEDs
+    "Q1": (11.2, 63.9, 0), "R10": (11.2, 61.4, 0),
+    "Q2": (11.2, 54.8, 0), "R11": (11.2, 52.3, 0),
+    "Q3": (11.2, 45.3, 0), "R12": (11.2, 42.8, 0),
+}
+
+# Parts whose own pad spacing is tighter than the board default (mm). The
+# USB-C VBUS/GND pads sit 0.10 mm apart by design; JLCPCB handles that.
+LOCAL_CLEARANCE = {"J1": 0.1}
+
+# MCU decoupling ring: these refs are dealt out round the RP2350B in order.
+MCU_RING = ["C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20", "C21", "C22",
+            "C23", "C24", "C25", "C26", "C27", "C28", "C29", "C30", "R3", "R8", "R9"]
+RING_SLOTS = ([(4.3, 16.5 + 1.3 * i, 0) for i in range(8)] +       # left column
+              [(18.2, 16.8 + 1.3 * i, 0) for i in range(7)] +      # right column
+              [(6.8 + 1.3 * i, 27.8, 90) for i in range(6)])       # above
 
 
+# --- Geometry helpers -------------------------------------------------------
 def outline():
     """Board edge as a list of segments/arcs, counter-clockwise from (0,0)."""
     P = [
@@ -89,7 +135,6 @@ def outline():
     segs = []
     for (a, b) in zip(P, P[1:]):
         if a == (HUB_W, 0):
-            # right edge with a half-moon notch cut into the board
             # right edge with a notch: an arc 9.35 mm long on the edge, 3.5 mm deep
             y0 = NOTCH_TOP - NOTCH_LEN
             segs.append(("line", (HUB_W, 0), (HUB_W, y0)))
@@ -128,23 +173,12 @@ def courtyard_bbox(fp):
     return box or fp.GetBoundingBox(False)
 
 
-def pad_center(fp, names):
-    ps = [p.GetPosition() for p in fp.Pads() if p.GetNumber() in names]
+def pad_center(fp, names=None):
+    ps = [p.GetPosition() for p in fp.Pads() if names is None or p.GetNumber() in names]
     return (sum(p.x for p in ps) / len(ps), sum(p.y for p in ps) / len(ps))
 
 
-def place(board, ref, value, lib, name, rot, side, anchor, x, y):
-    fp = pcbnew.FootprintLoad(FP + lib + ".pretty", name)
-    fp.SetReference(ref)
-    fp.SetValue(value)
-    fp.SetPosition(pt(0, 0))
-    fp.SetOrientationDegrees(rot)
-    # some library footprints carry a stray "REF**" silkscreen text
-    for t in [g for g in fp.GraphicalItems() if hasattr(g, "GetText") and g.GetText() == "REF**"]:
-        fp.Remove(t)
-    board.Add(fp)  # must be on the board before Flip, or pcbnew segfaults
-    if side == "B":
-        fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
+def move_to(fp, anchor, x, y):
     box = courtyard_bbox(fp)
     tx, ty = pt(x, y).x, pt(x, y).y
     if anchor == "top":
@@ -152,14 +186,20 @@ def place(board, ref, value, lib, name, rot, side, anchor, x, y):
     elif anchor == "right":
         cx, cy = box.GetRight(), box.GetCenter().y
     elif anchor == "shaft":
-        # encoder shaft sits midway between the two mounting lugs
-        cx, cy = pad_center(fp, ["MP"]) if any(
-            p.GetNumber() == "MP" for p in fp.Pads()) else box.GetCenter()
-    elif anchor == "led":
-        cx, cy = pad_center(fp, ["1", "2"])
+        cx, cy = pad_center(fp, ["D", "E"])   # EC12E mounting lugs straddle the shaft
+    elif anchor == "pads":
+        cx, cy = pad_center(fp)
     else:
         cx, cy = box.GetCenter().x, box.GetCenter().y
     fp.Move(pcbnew.VECTOR2I(int(tx - cx), int(ty - cy)))
+
+
+def load_fp(libref):
+    lib, name = libref.split(":", 1)
+    path = LIBS.get(lib, os.path.join(KICAD_FP, lib + ".pretty"))
+    fp = pcbnew.FootprintLoad(path, name)
+    if fp is None:
+        raise SystemExit(f"footprint not found: {libref} ({path})")
     return fp
 
 
@@ -188,28 +228,88 @@ def main():
     board = pcbnew.CreateEmptyBoard()
     ds = board.GetDesignSettings()
     ds.SetBoardThickness(pcbnew.FromMM(1.6))
-    # JLCPCB-friendly 2-layer defaults
-    ds.m_TrackMinWidth = pcbnew.FromMM(0.15)
-    ds.m_MinClearance = pcbnew.FromMM(0.15)
-    ds.m_ViasMinSize = pcbnew.FromMM(0.5)
-    ds.m_MinThroughDrill = pcbnew.FromMM(0.3)
-    board.SetCopperLayerCount(2)
+    # JLCPCB 4-layer capabilities, with some margin
+    ds.m_TrackMinWidth = pcbnew.FromMM(0.1)
+    ds.m_MinClearance = pcbnew.FromMM(0.1)
+    ds.m_ViasMinSize = pcbnew.FromMM(0.45)
+    ds.m_MinThroughDrill = pcbnew.FromMM(0.2)
+    ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
+    nc = ds.m_NetSettings.GetDefaultNetclass()
+    nc.SetClearance(pcbnew.FromMM(0.12))
+    nc.SetTrackWidth(pcbnew.FromMM(0.2))
+    nc.SetViaDiameter(pcbnew.FromMM(0.5))
+    nc.SetViaDrill(pcbnew.FromMM(0.25))
+    # 4 layers: signals / GND / power / signals. 90 ohm USB pairs need the
+    # ground plane right under the top layer.
+    board.SetCopperLayerCount(4)
 
     add_edge(board)
 
     for ref, x, y in HOLES:
-        h = pcbnew.FootprintLoad(FP + "MountingHole.pretty", "MountingHole_2.7mm_M2.5_Pad")
+        h = load_fp("MountingHole:MountingHole_2.7mm_M2.5")
         h.SetReference(ref)
         h.SetPosition(pt(x, y))
         board.Add(h)
 
-    for p in PARTS:
-        place(board, *p)
+    comps, nets = read_netlist(NETLIST)
+
+    netinfo = {}
+    for name in nets:
+        ni = pcbnew.NETINFO_ITEM(board, name)
+        board.Add(ni)
+        netinfo[name] = ni
+    pad_net = {(r, p): n for n, nodes in nets.items() for r, p in nodes}
+
+    placed = dict(GROUPS)
+    placed.update({r: (s[0], s[1], s[2]) for r, s in zip(MCU_RING, RING_SLOTS)})
+    staging = 0
+    for ref in sorted(comps, key=lambda r: (re.sub(r"\d+", "", r), int(re.sub(r"\D", "", r) or 0))):
+        c = comps[ref]
+        fp = load_fp(c["footprint"])
+        fp.SetReference(ref)
+        fp.SetValue(c["value"])
+        if "LCSC" in c["fields"]:
+            fp.SetField("LCSC", c["fields"]["LCSC"])
+            fp.GetField("LCSC").SetVisible(False)
+        else:
+            fp.SetExcludedFromBOM(True)
+            fp.SetExcludedFromPosFiles(True)
+        for t in [g for g in fp.GraphicalItems() if hasattr(g, "GetText") and g.GetText() == "REF**"]:
+            fp.Remove(t)
+        for pad in fp.Pads():
+            # easyeda2kicad exports plastic locating pegs as plated holes with
+            # no copper; they're really unplated (NPTH)
+            if (not pad.GetNumber() and pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH
+                    and pad.GetSizeX() <= pad.GetDrillSizeX()):
+                pad.SetAttribute(pcbnew.PAD_ATTRIB_NPTH)
+            n = pad_net.get((ref, pad.GetNumber()))
+            if n:
+                pad.SetNet(netinfo[n])
+        fp.SetPosition(pt(0, 0))
+        board.Add(fp)   # must be on the board before Flip, or pcbnew segfaults
+        if ref in LOCAL_CLEARANCE:
+            fp.SetLocalClearance(pcbnew.FromMM(LOCAL_CLEARANCE[ref]))
+        if ref in MECH:
+            rot, side, anchor, x, y = MECH[ref]
+            fp.SetOrientationDegrees(rot)
+            if side == "B":
+                fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
+            move_to(fp, anchor, x, y)
+            fp.SetLocked(True)
+        elif ref in placed:
+            x, y, rot = placed[ref]
+            fp.SetOrientationDegrees(rot)
+            move_to(fp, "center", x, y)
+        else:
+            # not placed yet: park it right of the board so it's easy to spot
+            move_to(fp, "center", 60 + 6 * (staging % 5), 80 - 6 * (staging // 5))
+            staging += 1
+    if staging:
+        print(f"note: {staging} parts not in MECH/GROUPS, parked right of the board")
 
     # Front silkscreen labels for the lock LEDs
     for ref, label in (("D1", "NUM"), ("D2", "CAPS"), ("D3", "SCROLL")):
-        y = next(p for p in PARTS if p[0] == ref)[8]
-        note(board, label, 20.0, y - 0.5, 0.8, pcbnew.F_SilkS)
+        note(board, label, 20.0, MECH[ref][4] - 0.5, 0.8, pcbnew.F_SilkS)
 
     # Key dimensions on User.Drawings so they show up on the fit-check print
     dim(board, (0, 0), (0, BODY_TOP), 9.0)
@@ -227,18 +327,15 @@ def main():
     bar.SetEnd(pt(42, -17))
     board.Add(bar)
     note(board, "This bar must measure exactly 50.0 mm when printed", -8, -19.5, 1.0)
-
-    note(board, "DRAFT - outline traced from a photo, scaled to the 83.9 mm body.",
-         -8, -9, 1.0)
-    note(board, "Verify with calipers before ordering. See docs/measurements.md.",
-         -8, -11, 1.0)
+    note(board, "DRAFT - not routed yet. Outline from measurements + photos,", -8, -9, 1.0)
+    note(board, "see docs/measurements.md.", -8, -11, 1.0)
 
     # Put the drill/place origin at our (0,0) so KiCad coordinates match the docs
-    board.GetDesignSettings().SetAuxOrigin(pt(0, 0))
-    board.GetDesignSettings().SetGridOrigin(pt(0, 0))
+    ds.SetAuxOrigin(pt(0, 0))
+    ds.SetGridOrigin(pt(0, 0))
 
     pcbnew.SaveBoard(os.path.abspath(OUT), board)
-    print("wrote", os.path.abspath(OUT))
+    print("wrote", os.path.abspath(OUT), f"({len(comps)} parts, {len(nets)} nets)")
 
 
 if __name__ == "__main__":
