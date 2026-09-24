@@ -1,0 +1,29 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  board:
+    runs-on: ubuntu-latest
+    container: ghcr.io/inti-cmnb/kicad10_auto_full:1.9.1-1_k10.0.5_d13.2_b4.2.4LTS
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Regenerate board, renders and fit-check PDF
+        run: make board docs
+
+      # Draft stage: DRC is informational until the schematic exists.
+      - name: DRC
+        run: make drc
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: board-outputs
+          path: |
+            build/drc.rpt
+            docs/fit-check-1to1.pdf
+            docs/render-*.png
