@@ -72,7 +72,7 @@ MECH = {
     "SW3": (90, "F", "center", 3.4, 37.1),
     "SW4": (90, "F", "center", 19.7, 75.0),   # photo: 75.4; clears USB-C pins
     "SW5": (90, "F", "center", 20.0, 32.0),
-    "D1": (0, "F", "pads", 16.9, 63.1),       # NUM
+    "D1": (0, "F", "pads", 16.9, 63.1),       # NUM (WS2812D RGB)
     "D2": (0, "F", "pads", 16.9, 54.0),       # CAPS
     "D3": (0, "F", "pads", 16.9, 44.5),       # SCROLL
 }
@@ -103,10 +103,9 @@ GROUPS = {
     "U5": (24.9, 78.4, 0), "R1": (27.0, 79.6, 90), "R2": (28.0, 79.6, 90),
     "U4": (31.3, 78.6, 0), "C1": (34.8, 78.6, 90), "C2": (29.8, 81.4, 0),
     "C3": (32.2, 81.5, 0), "C4": (30.6, 75.6, 0), "C5": (27.6, 75.6, 0),
-    # Lock LED drivers, between the button column and the LEDs
-    "Q1": (11.2, 63.9, 0), "R10": (11.2, 61.4, 0),
-    "Q2": (11.2, 54.8, 0), "R11": (11.2, 52.3, 0),
-    "Q3": (11.2, 45.3, 0), "R12": (11.2, 42.8, 0),
+    # RGB lock LEDs: level shifter + series R by the first LED, a cap per LED
+    "U8": (11.2, 60.4, 0), "R10": (11.2, 58.0, 0), "C34": (13.4, 60.4, 90),
+    "C35": (11.2, 64.4, 0), "C36": (11.2, 55.3, 0), "C37": (11.2, 45.8, 0),
 }
 
 # Parts whose own pad spacing is tighter than the board default (mm). The

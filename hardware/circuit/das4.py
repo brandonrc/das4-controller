@@ -42,8 +42,8 @@ lib_search_paths[KICAD9].append(os.environ.get("KICAD_SYMBOL_DIR", "/usr/share/k
 J4_GPIO = list(range(21, 47))          # J4 pin 1..26 -> GPIO21..GPIO46
 BUTTON_GPIO = [4, 5, 6, 7, 8]          # SW1..SW5
 ENC_A_GPIO, ENC_B_GPIO = 9, 10
-LED_GPIO = {"NUM": 11, "CAPS": 12, "SCROLL": 13}
-# spare: GPIO0-3, GPIO14-20, GPIO47
+LED_DATA_GPIO = 11                     # WS2812 chain: NUM -> CAPS -> SCROLL
+# spare: GPIO0-3, GPIO12-20, GPIO47
 
 # ---------------------------------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"
@@ -271,20 +271,26 @@ Net("ENC_A").connect(enc["A"], gpio(ENC_A_GPIO))
 Net("ENC_B").connect(enc["B"], gpio(ENC_B_GPIO))
 gnd += enc["C"], enc["D"], enc["E"]
 
-# --- Lock LEDs: 5 V -> 330R -> LED -> 2N7002 (gate on GPIO) -------------------
-# Driven from 5 V so any colour works (white/blue need ~3 V, more than a
-# 3.3 V GPIO can give through a resistor).
-for i, (label, g) in enumerate(LED_GPIO.items(), start=1):
-    led = lcsc(Part("Device", "LED", ref=f"D{i}", value=f"{label} (white)",
-                    footprint="LED_THT:LED_D5.0mm"), "C74067")
-    q = jlc("2N7002", f"Q{i}", "C8545")
-    a, k = Net(f"LED_{label}_A"), Net(f"LED_{label}_K")
-    R("330", vbus, a)
-    a += led["A"]
-    k += led["K"], q["D"]
-    gnd += q["S"]
-    Net(f"LED_{label}").connect(q["G"], gpio(g))
-
+# --- Lock LEDs: 3 x WS2812D (5 mm THT, RGB), any colour from firmware -------
+# One GPIO drives the chain NUM -> CAPS -> SCROLL. The LEDs run from 5 V and
+# want a 5 V data signal (VIH = 0.7 * VDD = 3.5 V), so a 74AHCT1G125 shifts
+# the 3.3 V GPIO up. 33R at the buffer output damps the edge.
+buf = jlc("74AHCT1G125GV", "U8", "C52140417")
+vbus += buf["VCC"]
+gnd += buf["GND"], buf[1]                # pin 1 = /OE, tied low: always on
+Net("LED_DATA_3V3").connect(buf["A"], gpio(LED_DATA_GPIO))
+C("100n", buf["VCC"])
+din = Net("LED_DIN1")
+R("33", buf["Y"], din)
+for i, label in enumerate(("NUM", "CAPS", "SCROLL"), start=1):
+    led = jlc("WS2812D-F5-12MA-C1", f"D{i}", "C4154875", f"{label} (RGB)")
+    vbus += led["VDD"]
+    gnd += led["GND"]
+    din += led["Din"]
+    C("100n", led["VDD"])
+    din = Net(f"LED_DIN{i + 1}") if i < 3 else None
+    if din is not None:
+        din += led["Dout"]
 
 if __name__ == "__main__":
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HW, "das4-controller.net")

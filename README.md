@@ -3,7 +3,7 @@
 An open-source replacement controller board for the **Das Keyboard 4 Professional**:
 same outline, same holes, same connectors, but with an **RP2350B** you can flash
 with QMK, KMK or your own firmware. It keeps the two USB-A ports (as a USB 2.0
-hub), the volume knob, the NUM/CAPS/SCROLL LEDs and the five buttons. Every
+hub), the volume knob, the NUM/CAPS/SCROLL LEDs (now RGB, any colour) and the five buttons. Every
 button gets its own GPIO, so you can make them do whatever you like.
 
 > **Status: circuit done, parts placed, not routed yet.** The outline is measured
@@ -15,8 +15,6 @@ button gets its own GPIO, so you can make them do whatever you like.
 | Top | Bottom |
 |---|---|
 | ![top](docs/render-top.png) | ![bottom](docs/render-bottom.png) |
-
-*The LEDs render red because that's KiCad's generic 5 mm LED model; the real parts are white.*
 
 ## Docs
 

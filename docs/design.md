@@ -30,7 +30,7 @@ PC ──USB-C──► USB 2.0 hub ──► USB-A port 1
                                  ├─ 26 × key matrix (J4)
                                  ├─ encoder A/B
                                  ├─ 5 × buttons
-                                 └─ 3 × lock LEDs
+                                 └─ 3 × RGB lock LEDs (one data line)
 ```
 
 The PC has to connect to the **hub**, and the MCU hangs off one of the hub's
@@ -73,7 +73,7 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 | USB-A ×2 | SHOU HAN AF 90 WJDG | USB 2.0, right angle, through-hole. 500 mA polyfuse, 22 µF bulk and USBLC6-2SC6 ESD per port |
 | Encoder | Alps EC12E24204A2 | 12 mm, no switch, 24 detents, 15 mm D-shaft. A push switch can't fit: the body sits flush with the board edge, so switch pins would land off the board |
 | Buttons ×5 | 6 × 6 × 5 mm SMD tact | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
-| Lock LEDs ×3 | 5 mm white THT | 5 V → 330 Ω → LED → 2N7002 low-side switch on a GPIO, so any colour works |
+| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (addressable) | Any colour from firmware (red, blue, per-lock, animations). One GPIO drives the chain NUM → CAPS → SCROLL through a 74AHCT1G125 3.3 V→5 V level shifter and a 33 Ω resistor; 100 nF per LED |
 | BOOTSEL / RESET | 4 × 3 mm SMD tact | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
 | SWD | 4 test pads | SWCLK, SWDIO, GND, 3V3 |
 | J4 | 26-pin, **placeholder** | Pitch/type unknown, not factory-assembled: reuse the original connector or fit one by hand |
@@ -90,8 +90,8 @@ follows this table ([`das4.py`](../hardware/circuit/das4.py) has the same thing)
 | J4 pin 1–26 (key matrix) | GPIO21–GPIO46 |
 | SW1–SW5 (active low, use internal pull-ups) | GPIO4–GPIO8 |
 | Encoder A / B (internal pull-ups) | GPIO9 / GPIO10 |
-| NUM / CAPS / SCROLL LED (high = on) | GPIO11 / GPIO12 / GPIO13 |
-| Spare | GPIO0–3, GPIO14–20, GPIO47 |
+| RGB LED data (WS2812, chain NUM → CAPS → SCROLL) | GPIO11 |
+| Spare | GPIO0–3, GPIO12–20, GPIO47 |
 
 ### Board
 
@@ -118,7 +118,7 @@ firmware can give them "fun" functions.
 - [ ] Does the key PCB have per-key LEDs or diodes? The diode direction sets the scan direction.
 - [ ] Encoder: confirm 15 mm shaft / 24 detents is close enough (original: ~14 mm, 20 detents).
 - [ ] J4: check with a multimeter that no pin carries 5 V before connecting (they go straight to RP2350 GPIO).
-- [ ] Cut JLCPCB fees: 14 Extended part types (~$3 each). Candidates: hand-solder the LEDs/switches, merge values.
+- [ ] Cut JLCPCB fees: 15 Extended part types (~$3 each). Candidates: hand-solder the LEDs/switches, merge values.
 - [ ] Route the board (next step).
 - [ ] Caliper pass on everything marked *photo* in [measurements.md](measurements.md).
 - [ ] Case clearance under the board (bottom-side parts and J4 height).
