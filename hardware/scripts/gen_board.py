@@ -139,6 +139,9 @@ def place(board, ref, value, lib, name, rot, side, anchor, x, y):
     fp.SetValue(value)
     fp.SetPosition(pt(0, 0))
     fp.SetOrientationDegrees(rot)
+    # some library footprints carry a stray "REF**" silkscreen text
+    for t in [g for g in fp.GraphicalItems() if hasattr(g, "GetText") and g.GetText() == "REF**"]:
+        fp.Remove(t)
     board.Add(fp)  # must be on the board before Flip, or pcbnew segfaults
     if side == "B":
         fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)

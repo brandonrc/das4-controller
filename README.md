@@ -9,9 +9,13 @@ button gets its own GPIO, so you can make them do whatever you like.
 > **Status: early draft.** The outline and part positions are traced from photos
 > and need a caliper pass. There's no schematic yet. Don't order boards from this.
 
+![3D render](docs/render-3d.png)
+
 | Top | Bottom |
 |---|---|
 | ![top](docs/render-top.png) | ![bottom](docs/render-bottom.png) |
+
+*The encoder and USB-C have no 3D models yet (KiCad's library doesn't include those parts). They'll appear once real parts are picked.*
 
 ## Docs
 
