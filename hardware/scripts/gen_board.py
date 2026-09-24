@@ -59,7 +59,7 @@ PARTS = [
     ("J4", "Key matrix 26p (TBD: pitch/type)", "Connector_PinSocket_1.00mm",
      "PinSocket_1x26_P1.00mm_Vertical", 0, "B", "center", 34.6, 63.8),
     ("ENC1", "Volume encoder (PEC12R-42xxF-S0024?)", "Rotary_Encoder",
-     "RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm", -90, "F", "shaft", 10.6, 2.5),
+     "RotaryEncoder_Alps_EC12E-Switch_Vertical_H20mm", -90, "F", "shaft", 10.0, 5.8),
     ("SW1", "Button", "Button_Switch_SMD",
      "SW_Push_1TS009xxxx-xxxx-xxxx_6x6x5mm", 90, "F", "center", 3.2, 70.8),
     ("SW2", "Button", "Button_Switch_SMD",

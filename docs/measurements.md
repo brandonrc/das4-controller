@@ -51,7 +51,7 @@ Change them there and regenerate.
 | J2 USB-A #1, mouth edge | 49.4 | 37.4 | ~5.8 mm past the board edge (photo) |
 | J3 USB-A #2, mouth edge | 49.4 | 18.4 | 19 mm port pitch (photo) |
 | J4 key-matrix connector (bottom side) | 34.6 | 51 – 76.5 | 26 pins (measured). Pitch/type TBD |
-| ENC1 volume encoder shaft | 10.6 | 2.5 | Body overhangs the bottom edge like the original (photo) |
+| ENC1 volume encoder shaft | 10.0 | 5.8 | From the fit-check print (50 mm bar for scale): the body sits about flush with the bottom edge. The first photo trace (2.5) measured the shaft *tip*, which parallax shifted ~3 mm outward. Caliper check welcome |
 | SW1 / SW2 / SW3 (left column) | 3.2 / 3.3 / 3.4 | 70.8 / 54.0 / 37.1 | photo |
 | SW4 (by USB-C) | 19.7 | 75.4 | photo |
 | SW5 (middle) | 20.0 | 32.0 | photo |
