@@ -39,7 +39,8 @@ TAB_X0 = 16.5       # USB-C tab left edge (photo)
 FINGER_X0 = 32.0    # finger left edge, 4 mm wide finger (photo + measured)
 LTAB_X = -7.55      # left mounting tab reaches this far out (photo)
 LTAB_Y0, LTAB_Y1 = 11.4, 23.8   # left tab bottom/top, ~12 mm tall (photo)
-NOTCH_Y, NOTCH_R = 7.1, 3.3     # half-moon notch on the USB-A edge (photo)
+NOTCH_TOP = 10.4                # notch upper end, near USB-A port 2 (photo)
+NOTCH_LEN, NOTCH_DEPTH = 9.35, 3.5  # notch opening along the edge / cut depth (measured)
 
 # --- Mounting holes (photo) -----------------------------------------------
 HOLES = [("H1", 22.6, 57.5), ("H2", 26.4, 18.6), ("H3", -4.6, 19.9)]
@@ -89,10 +90,12 @@ def outline():
     for (a, b) in zip(P, P[1:]):
         if a == (HUB_W, 0):
             # right edge with a half-moon notch cut into the board
-            segs.append(("line", (HUB_W, 0), (HUB_W, NOTCH_Y - NOTCH_R)))
-            segs.append(("arc", (HUB_W, NOTCH_Y - NOTCH_R),
-                         (HUB_W - NOTCH_R, NOTCH_Y), (HUB_W, NOTCH_Y + NOTCH_R)))
-            segs.append(("line", (HUB_W, NOTCH_Y + NOTCH_R), b))
+            # right edge with a notch: an arc 9.35 mm long on the edge, 3.5 mm deep
+            y0 = NOTCH_TOP - NOTCH_LEN
+            segs.append(("line", (HUB_W, 0), (HUB_W, y0)))
+            segs.append(("arc", (HUB_W, y0),
+                         (HUB_W - NOTCH_DEPTH, y0 + NOTCH_LEN / 2), (HUB_W, NOTCH_TOP)))
+            segs.append(("line", (HUB_W, NOTCH_TOP), b))
         else:
             segs.append(("line", a, b))
     return segs

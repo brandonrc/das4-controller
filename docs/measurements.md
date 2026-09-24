@@ -32,7 +32,8 @@ Change them there and regenerate.
 | Finger left edge x | 32.0 | photo |
 | Left mounting tab: sticks out to x | −7.55 | photo |
 | Left mounting tab: y from–to | 11.4 – 23.8 (12.4 tall) | photo, probably the "12 mm" on the sketch |
-| Half-moon notch on USB-A edge: centre y, radius | 7.1, 3.3 | photo |
+| Notch on USB-A edge: opening length × depth | 9.35 × 3.5 | measured |
+| Notch upper end y (near USB-A #2) | 10.4 (lower end ≈ 1.05) | photo |
 
 ## Mounting holes (all photo, M2.5 assumed)
 
