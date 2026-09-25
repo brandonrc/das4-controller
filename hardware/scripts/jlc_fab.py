@@ -35,7 +35,6 @@ def run(*cmd):
 
 
 def main():
-    routed = "--routed" in sys.argv
     shutil.rmtree(OUT, ignore_errors=True)
     gdir = os.path.join(OUT, "gerbers")
     os.makedirs(gdir)
@@ -43,6 +42,7 @@ def main():
         "--use-drill-file-origin", "-o", gdir + "/", PCB)
     run("kicad-cli", "pcb", "export", "drill", "--format", "excellon", "--drill-origin", "plot",
         "--excellon-separate-th", "-o", gdir + "/", PCB)
+    routed = any(t.GetClass() == "PCB_TRACK" for t in pcbnew.LoadBoard(PCB).GetTracks())
     name = "das4-controller-gerbers.zip" if routed else "das4-controller-gerbers-UNROUTED-quote-only.zip"
     with zipfile.ZipFile(os.path.join(OUT, name), "w", zipfile.ZIP_DEFLATED) as z:
         for f in sorted(os.listdir(gdir)):

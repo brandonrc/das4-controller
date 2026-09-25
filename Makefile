@@ -4,6 +4,7 @@
 #
 #   make            circuit -> netlist -> board -> renders + fit-check PDF -> DRC
 #   make bom        docs/bom.md with live JLCPCB stock (needs internet)
+#   make route      autoroute the placed board (slow, ~20 min)
 #   make fab        JLCPCB order files in build/jlcpcb/
 #   make parts      re-fetch JLC footprints/symbols/3D models (needs internet)
 
@@ -18,8 +19,10 @@ KICAD10_3DMODEL_DIR ?= /run/host/var/lib/flatpak/runtime/org.kicad.KiCad.Library
 export KICAD10_3DMODEL_DIR
 RENDER := kicad-cli pcb render --width 1600 --height 2000 --zoom 0.9 --quality high --floor
 
-.PHONY: all netlist board docs drc bom fab parts clean
+.PHONY: all netlist board route docs drc bom fab parts clean
 
+# Full rebuild from the circuit: note this regenerates the *unrouted* board.
+# After `make route`, use `make docs drc fab` (they don't rebuild the board).
 all: board docs drc
 
 # SKiDL + easyeda2kicad, installed next to the repo (the container's Python
@@ -34,14 +37,19 @@ netlist: $(DEPS)
 board: netlist
 	$(PY) hardware/scripts/gen_board.py
 
-docs: board
+docs:
 	kicad-cli pcb export pdf --mode-single --black-and-white --sp --ibt --scale 1 \
 		-l $(FAB) -o docs/fit-check-1to1.pdf $(PCB)
 	$(RENDER) --side top -o docs/render-top.png $(PCB)
 	$(RENDER) --side bottom -o docs/render-bottom.png $(PCB)
 	kicad-cli pcb render --width 1600 --height 1200 --quality high --floor --perspective --zoom 0.8 --rotate '-45,0,-60' -o docs/render-3d.png $(PCB)
 
-drc: board
+# Autoroute (Freerouting, several runs in parallel, best kept). Slow: ~20 min.
+# Not part of `all`: it overwrites the placed board with the routed one.
+route: board
+	python3 hardware/scripts/route_best.py
+
+drc:
 	mkdir -p build
 	kicad-cli pcb drc -o build/drc.rpt $(PCB)
 
@@ -49,7 +57,7 @@ bom: netlist
 	python3 hardware/scripts/bom.py
 
 # JLCPCB upload files -> build/jlcpcb/ (gerber zip, bom.csv, cpl.csv)
-fab: board
+fab:
 	$(PY) hardware/scripts/jlc_fab.py
 
 # LCSC parts fetched into hardware/lib with easyeda2kicad (plain Rs/Cs, the

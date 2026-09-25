@@ -68,14 +68,14 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 |---|---|---|
 | MCU | RP2350B (QFN-80) | Copied from Raspberry Pi's minimal design: 12 MHz ABM8-272-T3 crystal (15 pF, 1 kΩ), 16 MB W25Q128JV flash, 3.3 µH AOTA-B201610S3R3 inductor for the on-chip 1.1 V regulator (pad 1 to +1V1), 33 Ω/4.7 µF on VREG_AVDD, 100 nF on every IOVDD/DVDD pin. USB series resistors are 22 Ω (JLCPCB Basic) instead of RPi's 27 Ω |
 | USB hub | WCH CH334R (QSOP-16) | 4-port USB 2.0, built-in pull-ups/downs. Powered from 3.3 V on both V5 and VDD33 (datasheet §6.1). 12 MHz crystal with no load caps (they're on-chip). Port 1 → USB-A 1, port 2 → USB-A 2, port 3 → RP2350B, port 4 unused |
-| 3.3 V | AMS1117-3.3 (JLCPCB Basic) | ~1 V dropout at our ~200 mA, so it needs >4.3 V in; a USB port gives 4.75–5.25 V. 22 µF on the output |
+| 3.3 V | ME6211C33 LDO, 500 mA | ~0.1 V dropout and stable with ceramic caps. An AMS1117 (Basic) was tried and rejected in review: it drops out when VBUS sags on hot-plug, browning out the hub and MCU |
 | USB-C | HRO TYPE-C-31-M-12 | 5.1 kΩ on CC1/CC2 (we're a device). No separate ESD chip: the CH334R has 6 kV ESD protection on all its USB pins |
 | USB-A ×2 | SHOU HAN AF 90 WJDG (**hand-soldered**) | USB 2.0, right angle, through-hole. VBUS straight from the PC's 5 V (its port limits current); 22 µF + 100 nF per port |
 | Encoder | Alps EC12E24204A2 (**hand-soldered**) | 12 mm, no switch, 24 detents, 15 mm D-shaft. A push switch can't fit: the body sits flush with the board edge, so switch pins would land off the board |
 | Buttons ×5 | 6 × 6 × 5 mm SMD tact (**hand-soldered**) | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
-| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through 33 Ω. The first LED runs from 5 V through a 1N4148W diode (~4.3 V), so the 3.3 V data signal clears its 0.7 × VDD threshold; it re-drives the next LEDs at full 5 V. 100 nF per LED |
+| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through a 2N7002 + 1 kΩ pull-up to 5 V (Basic parts): a 5 V-level signal, **inverted**, so firmware drives the pin inverted (QMK: `WS2812_EXTERNAL_PULLUP`). 100 nF per LED |
 | BOOTSEL / RESET | TS-1187A 5 × 5 mm SMD tact (JLCPCB Basic) | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
-| SWD | 4 test pads | SWCLK, SWDIO, GND, 3V3 |
+| SWD | 5 test pads | SWCLK, SWDIO, GND, 3V3, RUN |
 | J4 | 26-pin, **placeholder** | Pitch/type unknown, not factory-assembled: reuse the original connector or fit one by hand |
 
 ### GPIO map
@@ -87,13 +87,25 @@ follows this table ([`das4.py`](../hardware/circuit/das4.py) has the same thing)
 
 | Function | GPIO |
 |---|---|
-| J4 pin 1–26 (key matrix) | GPIO21–GPIO46 |
+| J4 pin *k* (key matrix) | GPIO(40 − *k*): pin 1 → GPIO39 … pin 26 → GPIO14. Follows the package pin order so the bus fans out without crossings; stays off GPIO40–47 (not 5 V tolerant) |
 | SW1–SW5 (active low, use internal pull-ups) | GPIO4–GPIO8 |
 | Encoder A / B (internal pull-ups) | GPIO9 / GPIO10 |
-| RGB LED data (WS2812, chain NUM → CAPS → SCROLL) | GPIO11 |
-| Spare | GPIO0–3, GPIO12–20, GPIO47 |
+| RGB LED data (WS2812, chain NUM → CAPS → SCROLL; **inverted**) | GPIO11 |
+| Spare | GPIO0–3, GPIO12–13, GPIO40–47 (ADC-capable) |
 
 ### Board
+
+Routing (`make route`, [route.py](../hardware/scripts/route.py)): Freerouting,
+4 differently-configured runs in parallel, best kept. Before autorouting,
+some things are placed by hand and locked:
+- a GND via beside every MCU decoupling cap (caps face GND-side out)
+- VREG_PGND tied to the RP2350B's exposed GND pad underneath
+- the lock-LED 5 V pins joined on In2
+- each tact switch's internally-connected pad pairs joined
+
+After autorouting: GND stitching vias wherever the outer pours filled
+(~330), extra vias into any via-less pour piece, then fill.
+Result: 0 unconnected, 0 non-cosmetic DRC violations.
 
 - **4 layers** (signal / GND / power / signal). The hub's upstream link runs
   at USB high speed (480 Mbit/s) and needs 90 Ω pairs over a solid ground
@@ -118,7 +130,10 @@ firmware can give them "fun" functions.
 - [ ] Does the key PCB have per-key LEDs or diodes? The diode direction sets the scan direction.
 - [ ] Encoder: confirm 15 mm shaft / 24 detents is close enough (original: ~14 mm, 20 detents).
 - [ ] J4: check with a multimeter that no pin carries 5 V before connecting (they go straight to RP2350 GPIO).
-- [x] Cut JLCPCB fees: down to 5 Extended types (RP2350B, CH334R, USB-C, inductor, crystal); 11 easy parts are hand-soldered.
-- [ ] Route the board (next step).
+- [x] Cut JLCPCB fees: 6 Extended types (RP2350B, CH334R, USB-C, inductor, crystal, ME6211 LDO); 11 easy parts are hand-soldered.
+- [x] Independent design review: see [review-2026-09-25.md](review-2026-09-25.md).
+- [x] Route the board.
+- [ ] Layout review (independent reviewer, like the circuit review).
+- [ ] USB-C: only the A4/B9 VBUS pair is wired (B4/A9 boxed in by SW4); fine since plugs tie all VBUS pins.
 - [ ] Caliper pass on everything marked *photo* in [measurements.md](measurements.md).
 - [ ] Case clearance under the board (bottom-side parts and J4 height).

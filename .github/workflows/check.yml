@@ -11,13 +11,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Circuit -> netlist -> board, renders and fit-check PDF
-        run: make board docs
+      # The circuit must still build (the committed board is the routed one;
+      # `make board` would regenerate an unrouted copy, so CI doesn't run it)
+      - name: Circuit -> netlist
+        run: make netlist
 
-      # Draft stage: DRC is informational until the schematic exists.
-      - name: DRC
-        run: make drc
-        continue-on-error: true
+      - name: DRC on the committed (routed) board
+        run: |
+          make drc
+          kicad-cli pcb drc --refill-zones --severity-error --format json -o build/drc.json hardware/das4-controller.kicad_pcb
+          python3 - <<'PY'
+          import json, sys
+          r = json.load(open("build/drc.json"))
+          cosmetic = {"silk_overlap", "silk_over_copper", "silk_edge_clearance", "malformed_courtyard", "starved_thermal", "isolated_copper"}
+          real = [v for v in r["violations"] if v["type"] not in cosmetic]
+          unc = r.get("unconnected_items", [])
+          print(f"{len(unc)} unconnected, {len(real)} real violations")
+          sys.exit(1 if unc or real else 0)
+          PY
+
+      - name: Renders, fit-check PDF and JLCPCB order files
+        run: make docs fab
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -28,3 +42,4 @@ jobs:
             docs/fit-check-1to1.pdf
             docs/render-*.png
             hardware/das4-controller.net
+            build/jlcpcb/

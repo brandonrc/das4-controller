@@ -6,9 +6,8 @@ with QMK, KMK or your own firmware. It keeps the two USB-A ports (as a USB 2.0
 hub), the volume knob, the NUM/CAPS/SCROLL LEDs (now RGB, any colour) and the five buttons. Every
 button gets its own GPIO, so you can make them do whatever you like.
 
-> **Status: circuit done, parts placed, not routed yet.** The outline is measured
-> and checked against a 1:1 print. The circuit is written in code and all parts are
-> chosen and in stock at JLCPCB. Next: routing. Don't order boards from this yet.
+> **Status: routed, DRC clean (0 unconnected, 0 real violations), independent circuit review done.**
+> Before ordering: confirm the J4 connector (pitch/type, and that no pin carries 5 V) and do a final 1:1 fit print.
 
 ![3D render](docs/render-3d.png)
 
@@ -32,6 +31,8 @@ hardware/
   das4-controller.kicad_pro / .kicad_pcb   KiCad 10 project (board generated from the netlist)
   lib/jlc.*                                JLCPCB part symbols, footprints and 3D models (easyeda2kicad)
   scripts/gen_board.py                     outline, measured positions, placement
+  scripts/route.py, route_best.py          autorouting (Freerouting) + GND stitching, best of 4 runs
+  scripts/jlc_fab.py                       JLCPCB gerber zip, BOM and CPL
   scripts/jlc.py                           search JLCPCB's parts library (no login)
   scripts/bom.py                           docs/bom.md with live stock
 docs/                                      notes, renders, fit-check print
@@ -47,7 +48,8 @@ which is also what CI runs.
 # one-time: create the container
 distrobox create --name pcb --image ghcr.io/inti-cmnb/kicad10_auto_full:1.9.1-1_k10.0.5_d13.2_b4.2.4LTS
 
-distrobox enter pcb -- make          # circuit -> netlist -> board, renders, fit-check PDF, DRC
+distrobox enter pcb -- make board route   # circuit -> netlist -> placed board -> autorouted (~20 min)
+distrobox enter pcb -- make docs drc fab  # renders, fit-check PDF, DRC, JLCPCB files (don't rebuild the board)
 distrobox enter pcb -- make bom      # refresh docs/bom.md with live JLCPCB stock
 ```
 
@@ -56,10 +58,9 @@ Or use Docker directly:
 
 Open `hardware/das4-controller.kicad_pro` in KiCad 10 to look around.
 
-**Note:** while the mechanical layout is still in flux, the board file is
-*generated*. Edit the numbers in `gen_board.py`, not the board file, or your
-changes get overwritten on the next `make`. Once the outline is locked down we
-switch to editing in KiCad directly.
+**Note:** the board file is *generated*: `make board` rebuilds it (unrouted)
+from the circuit and `gen_board.py`, and `make route` routes it. Edit those,
+not the .kicad_pcb, or your changes get overwritten.
 
 ## Ordering (JLCPCB)
 
@@ -71,8 +72,7 @@ distrobox enter pcb -- make fab     # -> build/jlcpcb/: gerber zip, bom.csv, cpl
 2. Enable **PCB Assembly** (top side), upload `bom.csv` and `cpl.csv`, and check the placement preview.
 3. Order the "You solder" parts in [docs/bom.md](docs/bom.md) from LCSC (they can ship together).
 
-Until the board is routed, `make fab` names the zip `...-UNROUTED-quote-only`. It's good for a price
-quote, but it has no traces, so don't order it.
+`make fab` names the zip `...-UNROUTED-quote-only` if the board has no traces yet.
 
 ## License
 

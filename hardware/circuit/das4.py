@@ -36,14 +36,18 @@ lib_search_paths[KICAD9].append(os.environ.get("KICAD_SYMBOL_DIR", "/usr/share/k
 # ---------------------------------------------------------------------------
 # GPIO assignment. Any RP2350 GPIO can do any of these jobs, so this table is
 # the only thing to change when layout wants a different pin order.
-# Chosen for layout: on the RP2350B, GPIO21-46 run along the package's bottom
-# and right edges (towards J4 and the hub), GPIO4-13 along the left edge
-# (towards the buttons, LED drivers and encoder).
-J4_GPIO = list(range(21, 47))          # J4 pin 1..26 -> GPIO21..GPIO46
+# Chosen for layout: on the RP2350B, GPIO21-39 run along the package's bottom
+# and right edges (towards J4 and the hub), GPIO4-20 along the left edge.
+# J4 pin k -> GPIO(40 - k): pin 1 -> GPIO39 ... pin 26 -> GPIO14. That order
+# follows the RP2350B's pins round the package (right side top->bottom, then
+# bottom right->left, then left side), and J4's pins run top->bottom, so the
+# 26 lines fan out to J4 without crossing each other. It also keeps them off
+# GPIO40-47, which (unlike GPIO0-39) are not 5 V tolerant.
+J4_GPIO = [40 - k for k in range(1, 27)]
 BUTTON_GPIO = [4, 5, 6, 7, 8]          # SW1..SW5
 ENC_A_GPIO, ENC_B_GPIO = 9, 10
 LED_DATA_GPIO = 11                     # WS2812 chain: NUM -> CAPS -> SCROLL
-# spare: GPIO0-3, GPIO12-20, GPIO47
+# spare: GPIO0-3, GPIO12-13, GPIO40-47 (ADC-capable, not 5 V tolerant)
 
 # ---------------------------------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"
@@ -104,7 +108,10 @@ v11 = Net("+1V1")          # RP2350 core, from its on-chip switching regulator
 # --- USB-C upstream --------------------------------------------------------
 usb_up_dp, usb_up_dm = Net("USB_UP_D+"), Net("USB_UP_D-")
 j1 = jlc("TYPE-C-31-M-12", "J1", "C165948", "USB-C")
-vbus += j1["A4B9"], j1["B4A9"]
+# Only the A4/B9 VBUS pair is wired: B4/A9 sits boxed in by SW4's leg with no
+# room to escape. A USB-C plug ties all four VBUS contacts together, so either
+# orientation reaches A4/B9 (2 contacts, ~1.25 A each: plenty here).
+vbus += j1["A4B9"]
 gnd += j1["A1B12"], j1["B1A12"], j1["EH"]
 usb_up_dp += j1["A6"], j1["B6"]
 usb_up_dm += j1["A7"], j1["B7"]
@@ -118,16 +125,16 @@ C("100n", vbus)
 # pins (datasheet, features), and the RP2350B sits behind the hub.
 
 
-# --- 3.3 V regulator (hub + MCU + flash, ~200 mA) ----------------------------
-# AMS1117 (JLCPCB Basic). ~1 V dropout at 200 mA, so it needs >4.3 V in; USB
-# gives 4.75-5.25 V at the port. Wants 22 uF on the output.
-ldo = lcsc(Part("Regulator_Linear", "AMS1117-3.3", ref="U4",
-                footprint="Package_TO_SOT_SMD:SOT-223-3_TabPin2"), "C6186")
-vbus += ldo["VI"]
-gnd += ldo["GND"]
-v33 += ldo["VO"]
+# --- 3.3 V regulator (hub + MCU + flash, ~150-200 mA) ------------------------
+# ME6211: ~0.1 V dropout and stable with ceramic caps. (An AMS1117 would be a
+# Basic part but drops out when VBUS sags, e.g. hot-plugging a USB-A device,
+# which would brown out the hub and MCU; design review 2026-09-25.)
+ldo = jlc("ME6211C33M5G-N", "U4", "C82942")
+vbus += ldo["VIN"], ldo["CE"]
+gnd += ldo["VSS"]
+v33 += ldo["VOUT"]
 C("10u", vbus)
-C("22u", v33)
+C("10u", v33)
 C("10u", v33)
 
 # --- CH334R USB 2.0 hub ------------------------------------------------------
@@ -177,18 +184,21 @@ vreg_avdd = Net("VREG_AVDD")             # 33R + 4.7u RC filter
 R("33", v33, vreg_avdd)
 vreg_avdd += mcu["VREG_AVDD"]
 C("4.7u", vreg_avdd)
-# Core regulator: VREG_LX -> 3.3 uH -> +1V1. The inductor is polarised in the
-# RPi reference (pad 1 to +1V1); keep that orientation.
+# Core regulator: VREG_LX -> 3.3 uH -> +1V1. RPi wants the inductor's
+# polarity dot on the +1V1 end. This footprint (easyeda2kicad) puts the dot on
+# pad 2, so pad 2 goes to +1V1 (design review 2026-09-25: RPi's own board has
+# the dot next to +1V1).
 lx = Net("VREG_LX")
 lx += mcu["VREG_LX"]
 l1 = jlc("AOTA-B201610S3R3-101-T", "L1", "C42411119", "3.3uH")
-l1[1] += v11
-l1[2] += lx
+l1[2] += v11
+l1[1] += lx
 v11 += mcu["VREG_FB"]
 for p in mcu["DVDD"]:                    # 3 pins, 100 nF each
     v11 += p
     C("100n", p)
 C("4.7u", v11)
+C("4.7u", v11)                           # 2nd one at a DVDD pin away from the LX loop
 
 # Crystal: XIN direct, XOUT through 1k, 15 pF load caps (RPi minimal design)
 xm = jlc("ABM8-272-T3_C20625731", "Y1", "C20625731", "12MHz")
@@ -239,7 +249,8 @@ R("22", mcu_dp, mcu["USB_DP"])
 R("22", mcu_dm, mcu["USB_DM"])
 
 # SWD debug pads (not assembled: bare copper)
-for ref, sig in (("TP1", mcu["SWCLK"]), ("TP2", mcu["SWDIO"]), ("TP3", gnd), ("TP4", v33)):
+for ref, sig in (("TP1", mcu["SWCLK"]), ("TP2", mcu["SWDIO"]), ("TP3", gnd), ("TP4", v33),
+                 ("TP5", run)):
     tp = Part("Connector", "TestPoint", ref=ref, footprint="TestPoint:TestPoint_Pad_D1.5mm")
     tp[1] += sig
 
@@ -275,20 +286,19 @@ gnd += enc["C"], enc["D"], enc["E"]
 
 # --- Lock LEDs: 3 x WS2812D (5 mm THT, RGB), any colour from firmware -------
 # One GPIO drives the chain NUM -> CAPS -> SCROLL. WS2812s want data above
-# 0.7 x VDD; at 5 V that's 3.5 V, more than a 3.3 V GPIO. The classic fix
-# without a level-shifter chip: run the *first* LED from 5 V minus a diode
-# (~4.3 V, threshold ~3.0 V). Its output then drives the next LED at full 5 V.
-d_drop = lcsc(Part("Device", "D", ref="D4", value="1N4148W",
-                   footprint="Diode_SMD:D_SOD-123"), "C81598")
-led1_vdd = Net("LED1_VDD")
-d_drop["A"] += vbus
-d_drop["K"] += led1_vdd
+# 0.7 x VDD = 3.5 V at 5 V, more than a 3.3 V GPIO gives. Level shift with a
+# JLCPCB-Basic 2N7002 (open drain) and a 1k pull-up to 5 V. This INVERTS the
+# signal: firmware must drive the data line inverted (QMK: WS2812_EXTERNAL_PULLUP,
+# or invert the pin in the PIO program).
+q = jlc("2N7002", "Q1", "C8545")
 din = Net("LED_DIN1")
-R("33", gpio(LED_DATA_GPIO), din)
+Net("LED_DATA_N").connect(q["G"], gpio(LED_DATA_GPIO))
+gnd += q["S"]
+din += q["D"]
+R("1k", vbus, din)
 for i, label in enumerate(("NUM", "CAPS", "SCROLL"), start=1):
     led = hand(jlc("WS2812D-F5-12MA-C1", f"D{i}", "C4154875", f"{label} (RGB)"))
-    supply = led1_vdd if i == 1 else vbus
-    supply += led["VDD"]
+    vbus += led["VDD"]
     gnd += led["GND"]
     din += led["Din"]
     C("100n", led["VDD"])
