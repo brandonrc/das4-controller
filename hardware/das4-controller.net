@@ -2,7 +2,7 @@
   (version "D")
   (design
     (source "das4.py")
-    (date "09/25/2026 03:25 PM")
+    (date "09/25/2026 04:43 PM")
     (tool "SKiDL (2.3.0)")
     (sheet
       (number 1)
@@ -57,9 +57,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "Nx4DzE79ob")
+          (name "SKiDL Tag") "A5MAwVIqlJ")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -67,7 +67,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "3e2027d9-e12f-5a40-948a-4f48e471d26e"))
+      (tstamps "6cb988f2-983b-5aa5-a706-a60eb4e3370f"))
     (comp
       (ref "C10")
       (value "100n")
@@ -83,9 +83,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "8eMzC13AaQ")
+          (name "SKiDL Tag") "uKd4MLxUrw")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -93,7 +93,33 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "7c56f0bd-ecdc-56e4-b355-7328a058ab29"))
+      (tstamps "2e0c0a40-db34-583f-befb-5d604ffb2568"))
+    (comp
+      (ref "C105")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "e4oh3HgPwn")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "b1e87cc2-226a-540e-bac1-d484131c7bf4"))
     (comp
       (ref "C11")
       (value "22u")
@@ -109,9 +135,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "U36brE3ejz")
+          (name "SKiDL Tag") "_pYJRshXRc")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -119,7 +145,59 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "22eb9a78-5d09-539d-98d8-2533bf2af6bd"))
+      (tstamps "1a628c26-03fd-5f6e-9f1c-a12501ad114d"))
+    (comp
+      (ref "C110")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R3_ghQoz6F")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "d5941e23-0c77-57a2-8ec2-e163a2a06616"))
+    (comp
+      (ref "C115")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "Yl35IqE4ix")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "9c5ba3e4-472b-505a-baed-27348deb5e52"))
     (comp
       (ref "C12")
       (value "100n")
@@ -135,9 +213,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "GevbiTjxtU")
+          (name "SKiDL Tag") "szeS8Nvudu")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -145,9 +223,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "76a97d12-cac5-5aac-a324-4be9b098b22a"))
+      (tstamps "4090b183-d330-5a31-8860-d03dcada78bc"))
     (comp
-      (ref "C13")
+      (ref "C124")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -161,9 +239,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "9K_GAGekhR")
+          (name "SKiDL Tag") "SY1Rm1gutb")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -171,9 +249,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "4727c21c-8785-5ebe-900a-269507345bdb"))
+      (tstamps "e5000f27-e6c5-5941-8d71-ad50bb17a4d7"))
     (comp
-      (ref "C14")
+      (ref "C129")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -187,9 +265,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "wQm2lGLdNI")
+          (name "SKiDL Tag") "Zp_8BgMGVw")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -197,9 +275,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "b2ad3b18-22b2-51af-b780-52b2978546b5"))
+      (tstamps "bc6c60cd-cac9-581d-b045-d32665a55cb6"))
     (comp
-      (ref "C15")
+      (ref "C132")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -213,9 +291,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "kmCG_xjxOE")
+          (name "SKiDL Tag") "ztNnGlbYd3")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -223,9 +301,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "1ebb093f-0922-54ec-accf-59ceaa83a8e2"))
+      (tstamps "de9264ae-9c5d-5438-a1c2-118b0958cc6f"))
     (comp
-      (ref "C16")
+      (ref "C141")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -239,9 +317,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "cZfxlWy2Lk")
+          (name "SKiDL Tag") "4zEmk7orpk")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -249,9 +327,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "7d852e5c-ada4-5d9a-9a0c-37426ef40b0a"))
+      (tstamps "b3c788b6-637c-5799-b051-a2944be5b2b6"))
     (comp
-      (ref "C17")
+      (ref "C150")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -265,9 +343,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "rx85gvdz3Y")
+          (name "SKiDL Tag") "4axaiP0mDI")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -275,9 +353,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "889fb9f9-dbc4-54dd-97ca-d4785bff2927"))
+      (tstamps "0b3fa8e5-4d16-5580-a1ec-08cdc5c4b969"))
     (comp
-      (ref "C18")
+      (ref "C151")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -291,9 +369,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "W5IJK4j3Lm")
+          (name "SKiDL Tag") "S6X_aPDTFC")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -301,9 +379,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "810fdba4-66f7-55d2-99a3-e84c7209389a"))
+      (tstamps "9f860c51-af4e-53b6-8e67-ed9ac1bcad05"))
     (comp
-      (ref "C19")
+      (ref "C159")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -317,9 +395,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "gnTJOeYh3A")
+          (name "SKiDL Tag") "cLFkfvsA9L")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -327,7 +405,241 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "b3162aaf-dcc7-57a8-bfd7-4e8d039ee759"))
+      (tstamps "65c60df8-4fa7-5ca5-b3f3-2d44f31a4c3b"))
+    (comp
+      (ref "C160")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "PgNcwmgaZf")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "c9213a88-14e9-5978-9796-0ed80b40590a"))
+    (comp
+      (ref "C161")
+      (value "4.7u")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C23733")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "4tHqFbD2kE")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "71319d42-0ecc-5243-a39a-c3c65c8f5fb2"))
+    (comp
+      (ref "C164")
+      (value "4.7u")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C23733")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "V7IUUMgYWa")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "cac0496f-4713-5bbc-8c46-721f5c9d6854"))
+    (comp
+      (ref "C165")
+      (value "4.7u")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C23733")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "JS6Ooky5XC")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "9d50700e-28a1-5e4c-8550-6e464fa6c733"))
+    (comp
+      (ref "C166")
+      (value "4.7u")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C23733")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "K8JPjcCeD0")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "a47b1570-7b6a-5839-88ff-42862cbce588"))
+    (comp
+      (ref "C168")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "5sMAU_awks")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "d7f4e559-a615-504c-ba36-52d429840929"))
+    (comp
+      (ref "C169")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "HM_f60u88U")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "8a384077-dfd7-5a48-a576-3668406047fd"))
+    (comp
+      (ref "C176")
+      (value "100n")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C1525")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "n5ASsP7Sji")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "b409346e-e0c0-51a2-b702-eb167cede6d8"))
+    (comp
+      (ref "C190")
+      (value "10u")
+      (description "Unpolarized capacitor")
+      (footprint "Capacitor_SMD:C_0603_1608Metric")
+      (fields
+        (field
+          (name "LCSC") "C19702")
+        (field
+          (name "Description") "Unpolarized capacitor")
+        (field
+          (name "Footprint") "Capacitor_SMD:C_0603_1608Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "0vMcH5iPSG")
+        (field
+          (name "SKiDL Line") "das4.py:98"))
+      (libsource
+        (lib "Device")
+        (part "C"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "6a0a66f3-8586-533a-8eaa-11dbdfb50fab"))
     (comp
       (ref "C2")
       (value "100n")
@@ -343,9 +655,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "UDNerZ8Koq")
+          (name "SKiDL Tag") "djeSk7HVO9")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -353,15 +665,15 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "bdb5b52c-c149-5f8d-924c-c5930ad86241"))
+      (tstamps "aba31b80-5559-5867-9490-e108db8aff3c"))
     (comp
-      (ref "C20")
-      (value "100n")
+      (ref "C230")
+      (value "15p")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
       (fields
         (field
-          (name "LCSC") "C1525")
+          (name "LCSC") "C1548")
         (field
           (name "Description") "Unpolarized capacitor")
         (field
@@ -369,9 +681,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "MJydYnVnty")
+          (name "SKiDL Tag") "a7Rhfs1yGk")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -379,15 +691,15 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "32676262-3c07-5120-bed6-f8e6ff217ef1"))
+      (tstamps "8774807a-6123-56b7-876c-9c4822912a3b"))
     (comp
-      (ref "C21")
-      (value "100n")
+      (ref "C231")
+      (value "15p")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
       (fields
         (field
-          (name "LCSC") "C1525")
+          (name "LCSC") "C1548")
         (field
           (name "Description") "Unpolarized capacitor")
         (field
@@ -395,9 +707,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "gdTu_1CX1p")
+          (name "SKiDL Tag") "1TAub_cFmN")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -405,215 +717,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "ce06b2cc-5a43-594e-ab14-053894563d92"))
-    (comp
-      (ref "C22")
-      (value "100n")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1525")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "c6AGL6qc8K")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "986443c2-1a2f-5c7a-807b-c7866d0906d4"))
-    (comp
-      (ref "C23")
-      (value "100n")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1525")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "7JkwBul1Ha")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "40e2799c-4ee2-59e7-8739-f73d7be24deb"))
-    (comp
-      (ref "C24")
-      (value "4.7u")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C23733")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "jicjXWBrRX")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "7b63814e-14ef-5c67-b3e1-d652090e4e7a"))
-    (comp
-      (ref "C25")
-      (value "10u")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0603_1608Metric")
-      (fields
-        (field
-          (name "LCSC") "C19702")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0603_1608Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "8TbDsdxUv0")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "932a007a-941d-560f-8d38-b8aaa3d8202e"))
-    (comp
-      (ref "C26")
-      (value "4.7u")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C23733")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "ZUp3jEx2SB")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "83270922-c8d2-51fa-96e3-8acdb1412363"))
-    (comp
-      (ref "C27")
-      (value "100n")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1525")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "umQtudu_ey")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "71ef9969-88ae-57f1-85c4-cce73844a650"))
-    (comp
-      (ref "C28")
-      (value "100n")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1525")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "5adQAXLFVt")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "a2775d3c-3af6-5f45-b3f8-b9e0a0110502"))
-    (comp
-      (ref "C29")
-      (value "100n")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1525")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "7NyaYmirI9")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "b54a9678-2bde-59f0-8396-bf9eff94b17c"))
+      (tstamps "35bd2fc7-5bba-5216-9fa4-eae513879fdf"))
     (comp
       (ref "C3")
       (value "10u")
@@ -629,9 +733,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "mVrn4_YOvL")
+          (name "SKiDL Tag") "AhBsspmn2J")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -639,113 +743,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "e1135a78-ada3-58b6-8fe5-74845251a725"))
+      (tstamps "411add66-a76c-530a-9ebc-6b67eaa1b68e"))
     (comp
-      (ref "C30")
-      (value "4.7u")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C23733")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "mLJfYdHgiI")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "5419b0be-e438-5b42-a84f-91c562b34fe5"))
-    (comp
-      (ref "C31")
-      (value "4.7u")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C23733")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "vyRWopKZNW")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "96bfc9a0-7267-5d82-905f-6024214a89a1"))
-    (comp
-      (ref "C32")
-      (value "15p")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1548")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "MGzrICKbmC")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "257bc53d-c552-5684-a0ed-7d6c6caa6576"))
-    (comp
-      (ref "C33")
-      (value "15p")
-      (description "Unpolarized capacitor")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C1548")
-        (field
-          (name "Description") "Unpolarized capacitor")
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "1gFOe1cwIX")
-        (field
-          (name "SKiDL Line") "das4.py:96"))
-      (libsource
-        (lib "Device")
-        (part "C"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "ad469c0e-2673-5b8f-b996-9feba1fac2b9"))
-    (comp
-      (ref "C34")
+      (ref "C300")
       (value "100n")
       (description "Unpolarized capacitor")
       (footprint "Capacitor_SMD:C_0402_1005Metric")
@@ -759,9 +759,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "NujiZ_Pld6")
+          (name "SKiDL Tag") "ROrsVM9W0H")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -769,7 +769,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "4b4f93e2-f5e1-5786-883e-09e25f9f19a2"))
+      (tstamps "03c10ee4-69c9-5b54-9008-07827da3f543"))
     (comp
       (ref "C35")
       (value "100n")
@@ -785,9 +785,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "S8_oG47Znm")
+          (name "SKiDL Tag") "VdAESS3lLW")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -795,7 +795,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "65ee0a44-49bf-5171-a2a5-158cb49f9df1"))
+      (tstamps "f4ce071f-5c28-5b3e-b622-2a5f4634baa7"))
     (comp
       (ref "C36")
       (value "100n")
@@ -811,9 +811,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "n7ErrOFtC6")
+          (name "SKiDL Tag") "k9jwnPBrzM")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -821,7 +821,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "6b3dda56-61f3-5a52-9cad-7142749a48e8"))
+      (tstamps "28035b56-6307-54bd-af81-bba27491e244"))
     (comp
       (ref "C37")
       (value "100n")
@@ -837,9 +837,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "fgTnSWhE5l")
+          (name "SKiDL Tag") "q44CUtOwwE")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -847,7 +847,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "2141669b-5b9a-5111-abb7-877aaaf07922"))
+      (tstamps "ea371991-6b0d-5c3d-8e86-c93a7af3c177"))
     (comp
       (ref "C4")
       (value "10u")
@@ -863,9 +863,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "uKqzL41FoG")
+          (name "SKiDL Tag") "w13vdSYXE8")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -873,7 +873,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "e5d2efc4-e0a8-5c01-abff-5f3b6d02a732"))
+      (tstamps "a2f3d0dc-20b4-5938-8697-6a41fc5759f8"))
     (comp
       (ref "C5")
       (value "10u")
@@ -889,9 +889,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "hWkYF3My2P")
+          (name "SKiDL Tag") "SvIr7TOIBt")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -899,7 +899,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "d697dea6-7a96-53f5-a178-52ed602da705"))
+      (tstamps "a2cb3817-c59c-5e0c-aa42-d21de57492cf"))
     (comp
       (ref "C6")
       (value "1u")
@@ -915,9 +915,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "gRtJLBiwtx")
+          (name "SKiDL Tag") "zuKlzkNGQr")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -925,7 +925,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "4c433266-0a70-58ad-ada1-70279a334549"))
+      (tstamps "16a8a9ee-e962-59c1-bbbd-651e6bc2af64"))
     (comp
       (ref "C7")
       (value "100n")
@@ -941,9 +941,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "3otyatwYNE")
+          (name "SKiDL Tag") "AaXyIkrdB4")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -951,7 +951,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "e71ac020-b548-5f0e-8e49-c4bf5fec6e9d"))
+      (tstamps "eab35cf8-2077-5785-b93a-48a46215687f"))
     (comp
       (ref "C8")
       (value "10u")
@@ -967,9 +967,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "HfIUqciXNl")
+          (name "SKiDL Tag") "q2ZK55E7gp")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -977,7 +977,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "86241577-5815-5583-a405-306bc08c1a7a"))
+      (tstamps "495cfe83-9103-5861-b127-944d7f6b0b36"))
     (comp
       (ref "C9")
       (value "22u")
@@ -993,9 +993,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "BmzIvVtvAT")
+          (name "SKiDL Tag") "9VmVjjwWWx")
         (field
-          (name "SKiDL Line") "das4.py:96"))
+          (name "SKiDL Line") "das4.py:98"))
       (libsource
         (lib "Device")
         (part "C"))
@@ -1003,7 +1003,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "13d377d5-ca2e-57fe-98ee-85e8c580a0b7"))
+      (tstamps "50b4e7e0-b71a-57f6-9968-6aaac47021b8"))
     (comp
       (ref "D1")
       (value "NUM (RGB)")
@@ -1021,9 +1021,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C4154875.pdf")
         (field
-          (name "SKiDL Tag") "Yj6ggjjnIT")
+          (name "SKiDL Tag") "zFY0TpBu3D")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "WS2812D-F5-12MA-C1"))
@@ -1031,7 +1031,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "a6dbaaee-e285-5671-8049-f296a3dc825b"))
+      (tstamps "6bc8025f-33e8-5b3a-b2bb-ff599b85c351"))
     (comp
       (ref "D2")
       (value "CAPS (RGB)")
@@ -1049,9 +1049,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C4154875.pdf")
         (field
-          (name "SKiDL Tag") "bwE6A8wo1B")
+          (name "SKiDL Tag") "6dVQRORrxI")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "WS2812D-F5-12MA-C1"))
@@ -1059,7 +1059,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "9c8e665f-9edd-5b9b-a4d8-68dc456b0498"))
+      (tstamps "d0fb3e9f-5b81-5d33-9f49-1c9e30c13ad5"))
     (comp
       (ref "D3")
       (value "SCROLL (RGB)")
@@ -1077,9 +1077,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C4154875.pdf")
         (field
-          (name "SKiDL Tag") "LhzIYIgrBh")
+          (name "SKiDL Tag") "JaQOl9HBRV")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "WS2812D-F5-12MA-C1"))
@@ -1087,7 +1087,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "2a044094-f99a-54d0-8537-4db0f769fe9e"))
+      (tstamps "8b87b0e8-6827-5d4b-8e89-498865f0371c"))
     (comp
       (ref "ENC1")
       (value "EC12E24204A2")
@@ -1105,9 +1105,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/Others_ALPS-Electric-EC12E24204A2_C351238.html")
         (field
-          (name "SKiDL Tag") "RfL24QugaO")
+          (name "SKiDL Tag") "Nu4OMwVgtv")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "EC12E24204A2"))
@@ -1115,7 +1115,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "16499576-211b-5477-937d-2c3fa01261c1"))
+      (tstamps "5a332822-0039-5f5e-8bcb-edfdb4c20e06"))
     (comp
       (ref "J1")
       (value "USB-C")
@@ -1131,9 +1131,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/USB-Type-C_Korean-Hroparts-Elec-TYPE-C-31-M-12_C165948.html")
         (field
-          (name "SKiDL Tag") "_SO2GrHZ_Z")
+          (name "SKiDL Tag") "hsNwf_mlrc")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "TYPE-C-31-M-12"))
@@ -1141,7 +1141,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "77492fff-6339-552e-b526-d8d6cade6052"))
+      (tstamps "91e50626-1104-5804-a1d8-3bfa9526a086"))
     (comp
       (ref "J2")
       (value "USB-A 1")
@@ -1159,9 +1159,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/USB-Connectors_SHOU-HAN-AF-900-WJDG_C456018.html")
         (field
-          (name "SKiDL Tag") "zbJWjsnd86")
+          (name "SKiDL Tag") "7ObJJIqusB")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "AF90-WJDG"))
@@ -1169,7 +1169,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "d6db6c20-572b-5afb-80d1-83d645359edf"))
+      (tstamps "48e5dbac-e614-5f25-8f2d-6152cfc57606"))
     (comp
       (ref "J3")
       (value "USB-A 2")
@@ -1187,9 +1187,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/USB-Connectors_SHOU-HAN-AF-900-WJDG_C456018.html")
         (field
-          (name "SKiDL Tag") "J1pW1iTJnr")
+          (name "SKiDL Tag") "cUBTrYGrAk")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "AF90-WJDG"))
@@ -1197,7 +1197,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "5c60e9cc-2947-57f8-a47e-2bd3bf6828b4"))
+      (tstamps "09000c97-4c02-5de9-b46c-ac1b29243fcb"))
     (comp
       (ref "J4")
       (value "Key matrix")
@@ -1211,9 +1211,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "BsAFUKeoOa")
+          (name "SKiDL Tag") "L4UF4mbExl")
         (field
-          (name "SKiDL Line") "das4.py:269"))
+          (name "SKiDL Line") "das4.py:274"))
       (libsource
         (lib "Connector_Generic")
         (part "Conn_01x26"))
@@ -1221,7 +1221,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "eeb052a5-c88b-5c44-85e9-64dcfc999c7e"))
+      (tstamps "b96d92ab-a12b-5f20-932c-bdcc775b47f5"))
     (comp
       (ref "L1")
       (value "3.3uH")
@@ -1237,9 +1237,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C42411119.pdf")
         (field
-          (name "SKiDL Tag") "bzlZFHvu0q")
+          (name "SKiDL Tag") "YA_tb_JoEp")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "AOTA-B201610S3R3-101-T"))
@@ -1247,7 +1247,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "02dc18f1-d803-5d0b-b02a-553677c802d0"))
+      (tstamps "43b1c180-e1a5-5b1c-ad18-7f2aa6286e47"))
     (comp
       (ref "Q1")
       (value "2N7002")
@@ -1263,9 +1263,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/MOSFET_2N7002-7002_C8545.html")
         (field
-          (name "SKiDL Tag") "6XywlXSz_O")
+          (name "SKiDL Tag") "NCXjtjmH94")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "2N7002"))
@@ -1273,7 +1273,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "df45a7e7-6a0e-5875-a1a2-6bee645f6912"))
+      (tstamps "b80b784c-a536-5da6-b7e8-02bbfc36c425"))
     (comp
       (ref "R1")
       (value "5.1k")
@@ -1289,9 +1289,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "Dty6Q3vj1Q")
+          (name "SKiDL Tag") "tBXXYGXWVN")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1299,7 +1299,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "f26ff500-55af-5bfc-8f9e-99f3cfd64028"))
+      (tstamps "0b7e1c1d-278e-52ac-bda8-ea09949f02fc"))
     (comp
       (ref "R10")
       (value "1k")
@@ -1315,9 +1315,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "vTTPx15142")
+          (name "SKiDL Tag") "gpvR4xaCCV")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1325,7 +1325,33 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "37c68356-7edd-5634-9c0f-6385aa588d98"))
+      (tstamps "29da1e34-e521-5e7a-998c-54451521ce3b"))
+    (comp
+      (ref "R161")
+      (value "33")
+      (description "Resistor")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C25105")
+        (field
+          (name "Description") "Resistor")
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "H4AC_AGuWt")
+        (field
+          (name "SKiDL Line") "das4.py:89"))
+      (libsource
+        (lib "Device")
+        (part "R"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "fa3da1d2-1f3f-5703-ba25-92641554ab7b"))
     (comp
       (ref "R2")
       (value "5.1k")
@@ -1341,9 +1367,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "vLDpDj259t")
+          (name "SKiDL Tag") "9wYggHHRqw")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1351,35 +1377,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "96c06c42-6f98-569b-bc86-6aeb0b2705b2"))
+      (tstamps "b529c4f3-ba95-5f71-8c36-8ae6c7410cbb"))
     (comp
-      (ref "R3")
-      (value "33")
-      (description "Resistor")
-      (footprint "Resistor_SMD:R_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C25105")
-        (field
-          (name "Description") "Resistor")
-        (field
-          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "aeTNsOH2mq")
-        (field
-          (name "SKiDL Line") "das4.py:88"))
-      (libsource
-        (lib "Device")
-        (part "R"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "f0753313-7e11-5b40-8d3e-309b9d01321b"))
-    (comp
-      (ref "R4")
+      (ref "R231")
       (value "1k")
       (description "Resistor")
       (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -1393,9 +1393,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "bTjLeRxWOH")
+          (name "SKiDL Tag") "fCkPukbdOO")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1403,9 +1403,61 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "718834b4-1962-553d-b59d-8ad3c7e1c339"))
+      (tstamps "a8c518f8-ad29-5977-a6d2-0d9bd484ca25"))
     (comp
-      (ref "R5")
+      (ref "R266")
+      (value "22")
+      (description "Resistor")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C25092")
+        (field
+          (name "Description") "Resistor")
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "z2PQWZTyac")
+        (field
+          (name "SKiDL Line") "das4.py:89"))
+      (libsource
+        (lib "Device")
+        (part "R"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "5c090339-ab79-5877-8ed2-44b1b700ffa0"))
+    (comp
+      (ref "R267")
+      (value "22")
+      (description "Resistor")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "LCSC") "C25092")
+        (field
+          (name "Description") "Resistor")
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "mr_r7oyAga")
+        (field
+          (name "SKiDL Line") "das4.py:89"))
+      (libsource
+        (lib "Device")
+        (part "R"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "79a580d2-fcaa-5438-84ce-5b2f31e3a27b"))
+    (comp
+      (ref "R301")
       (value "10k")
       (description "Resistor")
       (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -1419,9 +1471,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "zQiiv0M_C7")
+          (name "SKiDL Tag") "UZlPNhioF2")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1429,9 +1481,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "34d7a628-d669-5af0-a52c-a745dc93eb36"))
+      (tstamps "75e65032-d22f-5175-aac7-d4db61306e80"))
     (comp
-      (ref "R6")
+      (ref "R302")
       (value "1k")
       (description "Resistor")
       (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -1445,9 +1497,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "7T3epOWhwO")
+          (name "SKiDL Tag") "KCzUq1Yz6E")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1455,9 +1507,9 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "259328dc-561a-5902-8112-206635f974e9"))
+      (tstamps "1bec8f74-c4ce-5ee9-8823-d7b804d06465"))
     (comp
-      (ref "R7")
+      (ref "R303")
       (value "1k")
       (description "Resistor")
       (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -1471,9 +1523,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "l0FmYAuchz")
+          (name "SKiDL Tag") "UEp9khWzK_")
         (field
-          (name "SKiDL Line") "das4.py:88"))
+          (name "SKiDL Line") "das4.py:89"))
       (libsource
         (lib "Device")
         (part "R"))
@@ -1481,59 +1533,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "a30c2270-cee6-5f60-8c73-ea6b71be616d"))
-    (comp
-      (ref "R8")
-      (value "22")
-      (description "Resistor")
-      (footprint "Resistor_SMD:R_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C25092")
-        (field
-          (name "Description") "Resistor")
-        (field
-          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "u5xBlao0zV")
-        (field
-          (name "SKiDL Line") "das4.py:88"))
-      (libsource
-        (lib "Device")
-        (part "R"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "bd58b24d-f083-5751-99c2-96024373bc65"))
-    (comp
-      (ref "R9")
-      (value "22")
-      (description "Resistor")
-      (footprint "Resistor_SMD:R_0402_1005Metric")
-      (fields
-        (field
-          (name "LCSC") "C25092")
-        (field
-          (name "Description") "Resistor")
-        (field
-          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "N09MOUPeHt")
-        (field
-          (name "SKiDL Line") "das4.py:88"))
-      (libsource
-        (lib "Device")
-        (part "R"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "b83224e9-3eed-5e4d-944e-ee95d5e28d45"))
+      (tstamps "0f5e0bdb-acba-5a1b-ba24-5e5df206b3a0"))
     (comp
       (ref "SW1")
       (value "Button 1")
@@ -1551,9 +1551,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C2837531.pdf")
         (field
-          (name "SKiDL Tag") "7AuizoN3Gh")
+          (name "SKiDL Tag") "NE2OXVSskq")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "KH-6X6X5H-STM"))
@@ -1561,7 +1561,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "20c262fe-5bd5-5693-b66c-5f789950cc77"))
+      (tstamps "fcc39da8-22f7-51e5-a0cd-8ca13a298d8f"))
     (comp
       (ref "SW2")
       (value "Button 2")
@@ -1579,9 +1579,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C2837531.pdf")
         (field
-          (name "SKiDL Tag") "heVX95hbLP")
+          (name "SKiDL Tag") "kdoxOZV8O4")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "KH-6X6X5H-STM"))
@@ -1589,7 +1589,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "43c67ee6-3f4e-549c-b640-46d321fd8525"))
+      (tstamps "63b38597-9687-59fd-9ab4-43e69ed9b2fc"))
     (comp
       (ref "SW3")
       (value "Button 3")
@@ -1607,9 +1607,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C2837531.pdf")
         (field
-          (name "SKiDL Tag") "DWTavqwtfh")
+          (name "SKiDL Tag") "XfMSmjLRIt")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "KH-6X6X5H-STM"))
@@ -1617,7 +1617,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "3f8454ce-614e-5c05-b120-fb5b4c7d6c58"))
+      (tstamps "8878654c-52b5-58a3-93e0-e48f3dc9d8bb"))
     (comp
       (ref "SW4")
       (value "Button 4")
@@ -1635,9 +1635,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C2837531.pdf")
         (field
-          (name "SKiDL Tag") "0sLgquz9im")
+          (name "SKiDL Tag") "p67iNGEPIT")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "KH-6X6X5H-STM"))
@@ -1645,7 +1645,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "e4029a15-ee7c-5d51-a46c-875a292c1788"))
+      (tstamps "065fc2e6-b175-5051-a11c-fdc186290517"))
     (comp
       (ref "SW5")
       (value "Button 5")
@@ -1663,9 +1663,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C2837531.pdf")
         (field
-          (name "SKiDL Tag") "NF5f9RqXC6")
+          (name "SKiDL Tag") "x8lyCa9Kbp")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "KH-6X6X5H-STM"))
@@ -1673,7 +1673,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "0f51929e-222f-5918-949b-71b03fdb5bb2"))
+      (tstamps "a17da136-19b4-550f-bb5c-b2a6f8c053fa"))
     (comp
       (ref "SW6")
       (value "BOOTSEL")
@@ -1689,9 +1689,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/Tactile-Switches_XKB-Enterprise-TS-1187-B-A-A_C318884.html")
         (field
-          (name "SKiDL Tag") "7ReE4hupng")
+          (name "SKiDL Tag") "yt_0RnT7c4")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "TS-1187A-B-A-B"))
@@ -1699,7 +1699,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "3628240a-cbaf-59b4-b48f-136cb9eceb2d"))
+      (tstamps "3099043b-4ff2-5f5e-bdfa-d6c8b756372d"))
     (comp
       (ref "SW7")
       (value "RESET")
@@ -1715,9 +1715,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/Tactile-Switches_XKB-Enterprise-TS-1187-B-A-A_C318884.html")
         (field
-          (name "SKiDL Tag") "UlG8c_uPkR")
+          (name "SKiDL Tag") "hvS5355NpN")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "TS-1187A-B-A-B"))
@@ -1725,7 +1725,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "873da853-2e85-522b-97cd-813a3906d900"))
+      (tstamps "a400b2d8-79f8-5ac0-aaac-f3575ebc1a68"))
     (comp
       (ref "TP1")
       (value "TestPoint")
@@ -1739,9 +1739,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "taSi2rNzYx")
+          (name "SKiDL Tag") "0a1c_TOmc6")
         (field
-          (name "SKiDL Line") "das4.py:254"))
+          (name "SKiDL Line") "das4.py:259"))
       (libsource
         (lib "Connector")
         (part "TestPoint"))
@@ -1749,7 +1749,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "24b902b9-42a3-5319-8233-653e7e21f748"))
+      (tstamps "6df0f92b-a296-52c7-bb7e-53dccfe12b4b"))
     (comp
       (ref "TP2")
       (value "TestPoint")
@@ -1763,9 +1763,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "4X9_N4EdDl")
+          (name "SKiDL Tag") "rR0WySTwGX")
         (field
-          (name "SKiDL Line") "das4.py:254"))
+          (name "SKiDL Line") "das4.py:259"))
       (libsource
         (lib "Connector")
         (part "TestPoint"))
@@ -1773,7 +1773,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "15056902-50f1-57e4-a5a9-f81c675a8c45"))
+      (tstamps "c942ca84-b697-58d8-9b43-666774d9b81f"))
     (comp
       (ref "TP3")
       (value "TestPoint")
@@ -1787,9 +1787,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "tFRRCcSaFA")
+          (name "SKiDL Tag") "T1QPgVXxy_")
         (field
-          (name "SKiDL Line") "das4.py:254"))
+          (name "SKiDL Line") "das4.py:259"))
       (libsource
         (lib "Connector")
         (part "TestPoint"))
@@ -1797,7 +1797,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "f0913dc5-d5b8-5c59-bdfb-ab9742585c45"))
+      (tstamps "1d30bf16-ddce-5651-ab41-a26e5aa4a9c7"))
     (comp
       (ref "TP4")
       (value "TestPoint")
@@ -1811,9 +1811,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "We4KhIiGfc")
+          (name "SKiDL Tag") "1SGFbq6oWl")
         (field
-          (name "SKiDL Line") "das4.py:254"))
+          (name "SKiDL Line") "das4.py:259"))
       (libsource
         (lib "Connector")
         (part "TestPoint"))
@@ -1821,7 +1821,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "0c1fa510-e242-587e-b3b7-d1ba34041cbd"))
+      (tstamps "c46183f1-c3b6-53cf-a659-c4bf0b4ed1cb"))
     (comp
       (ref "TP5")
       (value "TestPoint")
@@ -1835,9 +1835,9 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "fKWEWArEeW")
+          (name "SKiDL Tag") "Uhi67ysDEJ")
         (field
-          (name "SKiDL Line") "das4.py:254"))
+          (name "SKiDL Line") "das4.py:259"))
       (libsource
         (lib "Connector")
         (part "TestPoint"))
@@ -1845,7 +1845,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "31946f2d-81c9-5165-a05c-564a643865d6"))
+      (tstamps "2c44978f-abbb-5659-9a12-e8b5d991f916"))
     (comp
       (ref "U1")
       (value "RP2350B")
@@ -1861,9 +1861,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C42415655.pdf")
         (field
-          (name "SKiDL Tag") "xB4cDtJfqu")
+          (name "SKiDL Tag") "ZpllnlBLOu")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "RP2350B_C42415655"))
@@ -1871,7 +1871,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "37936f0e-f66b-5373-a13a-c24625d172f4"))
+      (tstamps "d3b3d397-0766-5a85-b186-8f243141c03b"))
     (comp
       (ref "U2")
       (value "CH334R")
@@ -1887,9 +1887,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C4154405.pdf")
         (field
-          (name "SKiDL Tag") "1JIEqAL8yE")
+          (name "SKiDL Tag") "ntesXaX33D")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "CH334R"))
@@ -1897,7 +1897,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "042da606-db7b-5851-8308-2bb317a3da4f"))
+      (tstamps "a2635fbb-35cc-54a5-8413-74b269d9e6c2"))
     (comp
       (ref "U3")
       (value "W25Q128JVS")
@@ -1913,9 +1913,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/FLASH_W25Q128JVSIQTR_C97521.html")
         (field
-          (name "SKiDL Tag") "RuPYd71Ukk")
+          (name "SKiDL Tag") "fn9OU3u00k")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "W25Q128JVSIQTR"))
@@ -1923,7 +1923,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "66a293a2-66ca-5902-8ba6-6b0d845f1fd1"))
+      (tstamps "3ea8c7fa-d612-54b7-974d-1846e287a901"))
     (comp
       (ref "U4")
       (value "ME6211C33M5G-N")
@@ -1939,9 +1939,9 @@
         (field
           (name "Datasheet") "https://lcsc.com/product-detail/Low-Dropout-Regulators-LDO_ME6211C33M5G-N_C82942.html")
         (field
-          (name "SKiDL Tag") "FcvjZCQeKg")
+          (name "SKiDL Tag") "qokHbU6qQT")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "ME6211C33M5G-N"))
@@ -1949,7 +1949,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "69078b9e-a2d1-5d6f-a128-8995f8a2a1aa"))
+      (tstamps "01002769-3ebd-53a5-875b-b34ef1b03e0e"))
     (comp
       (ref "Y1")
       (value "12MHz")
@@ -1965,9 +1965,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C20625731.pdf")
         (field
-          (name "SKiDL Tag") "q13ZYNN06l")
+          (name "SKiDL Tag") "4pSzUtIf76")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "ABM8-272-T3_C20625731"))
@@ -1975,7 +1975,7 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "4ae4e1d2-0c90-5bbf-98db-63b7b5f10c75"))
+      (tstamps "1aadef61-663f-53ec-b765-55ea9e7852bc"))
     (comp
       (ref "Y2")
       (value "12MHz")
@@ -1991,9 +1991,9 @@
         (field
           (name "Datasheet") "https://www.lcsc.com/datasheet/C20625731.pdf")
         (field
-          (name "SKiDL Tag") "O9MMK5fo07")
+          (name "SKiDL Tag") "I3aTHLE6fW")
         (field
-          (name "SKiDL Line") "das4.py:78"))
+          (name "SKiDL Line") "das4.py:79"))
       (libsource
         (lib "/home/geraci/projects/das4-controller/hardware/lib/jlc.kicad_sym")
         (part "ABM8-272-T3_C20625731"))
@@ -2001,30 +2001,30 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "fb4c1493-85d1-53d8-99d1-234f13d81c7b")))
+      (tstamps "e9d85362-0eab-529d-91ad-f002730e0fd3")))
   (nets
     (net
       (code 1)
       (name "+1V1")
       (class "Default")
       (node
-        (ref "C27")
+        (ref "C110")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C28")
+        (ref "C132")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C29")
+        (ref "C151")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C30")
+        (ref "C165")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C31")
+        (ref "C166")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -2052,59 +2052,59 @@
       (name "+3V3")
       (class "Default")
       (node
-        (ref "C13")
+        (ref "C105")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C14")
+        (ref "C115")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C15")
+        (ref "C124")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C16")
+        (ref "C129")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C17")
+        (ref "C141")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C18")
+        (ref "C150")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C19")
+        (ref "C159")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C20")
+        (ref "C160")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C21")
+        (ref "C164")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C22")
+        (ref "C168")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C23")
+        (ref "C169")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C24")
+        (ref "C176")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C25")
+        (ref "C190")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "C34")
+        (ref "C300")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -2128,11 +2128,11 @@
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "R3")
+        (ref "R161")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "R5")
+        (ref "R301")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -2297,7 +2297,7 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
-        (pin "1")
+        (pin "56")
         (pintype "UNSPECIFIED")))
     (net
       (code 5)
@@ -2313,7 +2313,7 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
-        (pin "2")
+        (pin "57")
         (pintype "UNSPECIFIED")))
     (net
       (code 6)
@@ -2329,7 +2329,7 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
-        (pin "3")
+        (pin "58")
         (pintype "UNSPECIFIED")))
     (net
       (code 7)
@@ -2345,7 +2345,7 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
-        (pin "4")
+        (pin "54")
         (pintype "UNSPECIFIED")))
     (net
       (code 8)
@@ -2361,7 +2361,7 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
-        (pin "6")
+        (pin "53")
         (pintype "UNSPECIFIED")))
     (net
       (code 9)
@@ -2400,7 +2400,19 @@
         (pin "2")
         (pintype "PASSIVE"))
       (node
+        (ref "C105")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
         (ref "C11")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C110")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C115")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -2408,31 +2420,67 @@
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C13")
+        (ref "C124")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C14")
+        (ref "C129")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C15")
+        (ref "C132")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C16")
+        (ref "C141")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C17")
+        (ref "C150")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C18")
+        (ref "C151")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C19")
+        (ref "C159")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C160")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C161")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C164")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C165")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C166")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C168")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C169")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C176")
+        (pin "2")
+        (pintype "PASSIVE"))
+      (node
+        (ref "C190")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -2440,43 +2488,11 @@
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C20")
+        (ref "C230")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C21")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C22")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C23")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C24")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C25")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C26")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C27")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C28")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C29")
+        (ref "C231")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -2484,23 +2500,7 @@
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "C30")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C31")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C32")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C33")
-        (pin "2")
-        (pintype "PASSIVE"))
-      (node
-        (ref "C34")
+        (ref "C300")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -2616,7 +2616,7 @@
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "R7")
+        (ref "R303")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -3029,7 +3029,7 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
-        (pin "9")
+        (pin "55")
         (pintype "UNSPECIFIED")))
     (net
       (code 39)
@@ -3124,7 +3124,7 @@
       (name "N$5")
       (class "Default")
       (node
-        (ref "R4")
+        (ref "R231")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -3136,7 +3136,7 @@
       (name "N$6")
       (class "Default")
       (node
-        (ref "R8")
+        (ref "R267")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -3148,7 +3148,7 @@
       (name "N$7")
       (class "Default")
       (node
-        (ref "R9")
+        (ref "R266")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -3244,11 +3244,11 @@
       (name "QSPI_SS")
       (class "Default")
       (node
-        (ref "R5")
+        (ref "R301")
         (pin "2")
         (pintype "PASSIVE"))
       (node
-        (ref "R6")
+        (ref "R302")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -3284,7 +3284,7 @@
       (name "RUN_BTN")
       (class "Default")
       (node
-        (ref "R7")
+        (ref "R303")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -3348,7 +3348,7 @@
       (name "USB_BOOT")
       (class "Default")
       (node
-        (ref "R6")
+        (ref "R302")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -3364,7 +3364,7 @@
       (name "USB_MCU_D+")
       (class "Default")
       (node
-        (ref "R8")
+        (ref "R267")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -3376,7 +3376,7 @@
       (name "USB_MCU_D-")
       (class "Default")
       (node
-        (ref "R9")
+        (ref "R266")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -3420,11 +3420,11 @@
       (name "VREG_AVDD")
       (class "Default")
       (node
-        (ref "C26")
+        (ref "C161")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "R3")
+        (ref "R161")
         (pin "2")
         (pintype "PASSIVE"))
       (node
@@ -3448,7 +3448,7 @@
       (name "XIN")
       (class "Default")
       (node
-        (ref "C32")
+        (ref "C230")
         (pin "1")
         (pintype "PASSIVE"))
       (node
@@ -3464,11 +3464,11 @@
       (name "XOUT_XTAL")
       (class "Default")
       (node
-        (ref "C33")
+        (ref "C231")
         (pin "1")
         (pintype "PASSIVE"))
       (node
-        (ref "R4")
+        (ref "R231")
         (pin "2")
         (pintype "PASSIVE"))
       (node

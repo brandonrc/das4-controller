@@ -70,7 +70,7 @@ MECH = {
     "SW1": (90, "F", "center", 3.35, 70.8),
     "SW2": (90, "F", "center", 3.3, 54.0),
     "SW3": (90, "F", "center", 3.4, 37.1),
-    "SW4": (90, "F", "center", 19.7, 75.0),   # photo: 75.4; clears USB-C pins
+    "SW4": (90, "F", "center", 19.5, 75.0),   # photo: (19.7, 75.4); clears USB-C pins + CC2 channel
     "SW5": (90, "F", "center", 20.0, 32.0),
     "D1": (0, "F", "pads", 16.9, 63.1),       # NUM (WS2812D RGB)
     "D2": (0, "F", "pads", 16.9, 54.0),       # CAPS
@@ -80,29 +80,53 @@ MECH = {
 # --- Everything else: rough groups (refine during routing) ------------------
 # ref: (x, y, rotation), all on the top side, centred on (x, y).
 GROUPS = {
-    # MCU block, lower middle. Its right/bottom edges (GPIO21-46) face J4/hub.
-    "U1": (11.0, 21.0, 0),                    # RP2350B
-    "U3": (11.5, 33.6, 90),                   # QSPI flash, above the MCU's QSPI pins
-    "C34": (14.2, 36.8, 0),
-    "R5": (8.2, 36.8, 0), "R6": (10.2, 36.8, 0),            # CS pull-up, BOOTSEL
-    "L1": (15.6, 28.2, 90),                    # core regulator inductor, by VREG_LX
-    "Y1": (20.6, 14.6, 0), "R4": (17.9, 14.9, 90),          # MCU crystal
-    "C32": (19.6, 12.2, 0), "C33": (21.8, 12.2, 0),
-    "SW6": (27.2, 40.2, 0),                   # BOOTSEL
-    "SW7": (26.8, 8.0, 0), "R7": (22.4, 8.0, 90),           # RESET
+    # --- MCU corner. U1 is rotated 90 degrees so each pin group faces what it
+    # connects to: regulator + QSPI flash left, crystal right, J4 and buttons
+    # up, encoder down. Coordinates of the regulator block copy Raspberry Pi's
+    # own minimal-design layout, translated to this package.
+    "U1": (11.0, 21.0, 90),                   # RP2350B
+    # regulator block on the left, stacked out from pins 61-65 like RPi's:
+    # VIN cap, then +1V1 output cap, then L1; LX runs between the cap pads
+    "C164": (4.93, 24.0, 90),                 # VREG_VIN 4.7u (pad1 at pin 64)
+    "C165": (3.99, 24.0, 90),                 # +1V1 out 4.7u
+    "L1": (2.34, 24.0, 270),                  # pad1 (LX) up, pad2 (+1V1, dot) down
+    "C161": (4.49, 26.2, 0),                  # VREG_AVDD 4.7u
+    "R161": (2.64, 26.2, 0),                  # VREG_AVDD 33R
+    # QSPI flash left of the QSPI pins (70-75), its support parts on the tab
+    "U3": (2.52, 17.3, None),                 # rotation picked so pad 5 is on top
+    "C300": (-0.8, 22.6, 90), "R301": (-1.3, 14.2, 0), "R302": (-1.3, 15.2, 0),
+    "C190": (1.8, 10.0, 90),                  # 3V3 bulk
+    # crystal right of XIN/XOUT (pins 30/31), R231 in line with XOUT
+    "Y1": (19.9, 20.8, 0), "R231": (17.2, 21.45, 0),
+    "C230": (18.8, 18.3, 270), "C231": (22.5, 21.65, 0),
+    # decoupling: supply pads face the MCU, each cap gets its own vias to the
+    # 3V3 plane (In2) / +1V1 spine (B.Cu) and GND (In1) in route.py
+    **{ref: (15.9, 26.9 + 1.05 * i, 0) for i, ref in enumerate(
+        # +1V1 caps nearest the chip: their B.Cu riser then stays clear of
+        # the +3V3 caps' vias above
+        ("C141", "C151", "C132", "C110", "C166", "C150", "C124", "C129", "C169", "C115"))},
+    **{ref: (6.3, 27.3 + 1.05 * i, 180) for i, ref in enumerate(("C160", "C159", "C176", "C168"))},
+    "C105": (6.2, 15.0, 180),
+    # USB series resistors at the hub end (full speed: placement not critical)
+    "R266": (34.4, 28.5, 0), "R267": (34.4, 29.7, 0),
     "TP1": (7.8, 39.0, 0), "TP2": (10.5, 39.0, 0), "TP3": (13.2, 39.0, 0), "TP4": (15.9, 39.0, 0),
     "TP5": (7.8, 41.5, 0),                    # RUN, next to the SWD pads
-    # Hub block, next to the USB-A ports
+    "SW6": (31.0, 40.0, 0),                   # BOOTSEL (clear of the USB_UP pair)
+    "SW7": (26.8, 8.0, 0), "R303": (22.4, 8.0, 90),         # RESET
+    # Hub block, next to the USB-A ports; C7/C6 right at VDD33/V5 (pins 13/12)
     "U2": (29.5, 30.0, 90),                   # CH334R
     "Y2": (27.0, 25.2, 0),
-    "C6": (31.2, 25.2, 90), "C7": (32.6, 25.2, 90), "C8": (30.0, 34.4, 0),
+    "C7": (24.9, 29.9, 180), "C6": (24.9, 28.8, 180), "C8": (30.0, 34.4, 0),
     # USB-A bulk caps (VBUS is the PC's 5 V directly)
     "C9": (31.0, 43.8, 0), "C10": (34.0, 43.8, 0),
     "C11": (32.6, 7.2, 90), "C12": (34.4, 7.2, 90),
-    # USB-C input, CC resistors, ME6211 3.3 V regulator
-    "R1": (27.0, 79.6, 90), "R2": (28.0, 79.6, 90),
+    # USB-C input: CC pull-downs either side of the D+/D- pins (the pair leaves
+    # straight down between them), ME6211 3.3 V regulator
+    # CC2 (B5) can only escape through a 0.35 mm channel between SW4's right
+    # leg and the D+ bridge, so R2 sits below SW4
+    "R1": (25.55, 79.6, 270), "R2": (22.85, 67.6, 270),
     "U4": (31.3, 78.6, 0), "C1": (34.8, 78.6, 90), "C2": (29.8, 81.4, 0),
-    "C3": (32.2, 81.5, 0), "C4": (30.6, 75.6, 0), "C5": (27.6, 75.6, 0),
+    "C3": (32.2, 81.5, 0), "C4": (30.6, 75.6, 0), "C5": (27.4, 75.6, 0),
     # RGB lock LEDs: 2N7002 level shifter + 5 V pull-up, a cap per LED
     "Q1": (11.2, 60.6, 0), "R10": (11.2, 58.0, 0),
     "C35": (11.2, 64.4, 0), "C36": (11.2, 55.3, 0), "C37": (11.2, 45.8, 0),
@@ -111,19 +135,6 @@ GROUPS = {
 # Parts whose own pad spacing is tighter than the board default (mm). The
 # USB-C VBUS/GND pads sit 0.10 mm apart by design; JLCPCB 4-layer does 0.09 mm.
 LOCAL_CLEARANCE = {"J1": 0.09}
-
-# MCU decoupling ring: these refs are dealt out round the RP2350B in order.
-MCU_RING = ["C13", "C14", "C15", "C16", "C17", "C18", "C19", "C20", "C21", "C22",
-            "C23", "C24", "C25", "C26", "C27", "C28", "C29", "C30", "C31", "R3", "R8", "R9"]
-# Caps are oriented with their GND pad facing *away* from the MCU, so each
-# gets its own GND via on the outside (route.py) and the supply pad sits next
-# to the MCU pin it feeds.
-RING_SLOTS = ([(4.3, 16.5 + 1.3 * i, 180) for i in range(10)] +    # left column
-              [(18.2, 16.8 + 1.3 * i, 0) for i in range(7)] +      # right column
-              # above: keep x 8.6-11.6 clear so the QSPI pins (70-75) run
-              # straight up to the flash
-              [(x, 27.8, 90) for x in (6.8, 8.0, 12.0, 13.2, 14.2)])
-
 
 # --- Geometry helpers -------------------------------------------------------
 def outline():
@@ -244,7 +255,7 @@ def main():
     # JLCPCB 4-layer capabilities, with some margin
     ds.m_TrackMinWidth = pcbnew.FromMM(0.1)
     ds.m_MinClearance = pcbnew.FromMM(0.1)
-    ds.m_ViasMinSize = pcbnew.FromMM(0.45)
+    ds.m_ViasMinSize = pcbnew.FromMM(0.4)
     ds.m_MinThroughDrill = pcbnew.FromMM(0.2)
     ds.m_CopperEdgeClearance = pcbnew.FromMM(0.3)
     ds.m_HoleClearance = pcbnew.FromMM(0.2)    # JLCPCB: via hole to copper 0.2 mm
@@ -275,7 +286,6 @@ def main():
     pad_net = {(r, p): n for n, nodes in nets.items() for r, p in nodes}
 
     placed = dict(GROUPS)
-    placed.update({r: (s[0], s[1], s[2]) for r, s in zip(MCU_RING, RING_SLOTS)})
     staging = 0
     for ref in sorted(comps, key=lambda r: (re.sub(r"\d+", "", r), int(re.sub(r"\D", "", r) or 0))):
         c = comps[ref]
@@ -315,8 +325,12 @@ def main():
             fp.SetLocked(True)
         elif ref in placed:
             x, y, rot = placed[ref]
+            if rot is None:          # pick 0/180 so pad 5 ends up above pad 1
+                fp.SetOrientationDegrees(0)
+                pads = {p.GetNumber(): p.GetPosition() for p in fp.Pads()}
+                rot = 0 if pads["5"].y < pads["1"].y else 180
             fp.SetOrientationDegrees(rot)
-            move_to(fp, "center", x, y)
+            move_to(fp, "pads" if ref.startswith(("U", "Y", "L")) else "center", x, y)
         else:
             # not placed yet: park it right of the board so it's easy to spot
             move_to(fp, "center", 60 + 6 * (staging % 5), 80 - 6 * (staging // 5))

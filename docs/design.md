@@ -80,32 +80,45 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 
 ### GPIO map
 
-Picked for routing: on the RP2350B, GPIO21-46 sit along the package's bottom and
-right edges (towards J4 and the hub), and GPIO4-13 along the left (towards the
-buttons, LED drivers and encoder). Any GPIO can do any job, so firmware just
-follows this table ([`das4.py`](../hardware/circuit/das4.py) has the same thing).
+Picked for routing. Any GPIO can do any job, so firmware just follows this
+table ([`das4.py`](../hardware/circuit/das4.py) has the same thing).
 
 | Function | GPIO |
 |---|---|
-| J4 pin *k* (key matrix) | GPIO(40 − *k*): pin 1 → GPIO39 … pin 26 → GPIO14. Follows the package pin order so the bus fans out without crossings; stays off GPIO40–47 (not 5 V tolerant) |
-| SW1–SW5 (active low, use internal pull-ups) | GPIO4–GPIO8 |
+| J4 pin *k* (key matrix) | GPIO(40 − *k*): pin 1 → GPIO39 … pin 26 → GPIO14. Follows the package pin order so the bus fans out without crossings; all on 5 V-tolerant GPIO0–39 |
+| SW1 / SW2 / SW3 / SW4 / SW5 (active low, use internal pull-ups) | GPIO45 / 46 / 47 / 43 / 42 |
 | Encoder A / B (internal pull-ups) | GPIO9 / GPIO10 |
-| RGB LED data (WS2812, chain NUM → CAPS → SCROLL; **inverted**) | GPIO11 |
-| Spare | GPIO0–3, GPIO12–13, GPIO40–47 (ADC-capable) |
+| RGB LED data (WS2812, chain NUM → CAPS → SCROLL; **inverted**) | GPIO44 |
+| Spare | GPIO0–8, GPIO11–13, GPIO40–41 |
+
+GPIO40–47 are the ADC pins and aren't 5 V tolerant, which is fine for the
+buttons and the LED driver (all 3.3 V). Mind RP2350 erratum E9 on those pins:
+use the internal pull-ups, don't rely on pull-downs.
 
 ### Board
 
-Routing (`make route`, [route.py](../hardware/scripts/route.py)): Freerouting,
-4 differently-configured runs in parallel, best kept. Before autorouting,
-some things are placed by hand and locked:
-- a GND via beside every MCU decoupling cap (caps face GND-side out)
-- VREG_PGND tied to the RP2350B's exposed GND pad underneath
-- the lock-LED 5 V pins joined on In2
+Stackup: F.Cu signals · In1 solid GND · In2 solid +3V3 · B.Cu signals + GND pour.
+
+The MCU corner follows Raspberry Pi's minimal-design layout, drawn by hand in
+[critical.py](../hardware/scripts/critical.py) and locked before autorouting:
+- the core regulator block right at pins 61–65: VREG_VIN and +1V1 caps
+  against the pins, LX running out between their pads into L1, GND vias
+  beside them, and the VREG_AVDD RC filter
+- a 3×3 via array in the exposed GND pad
+- a via straight inward from every +3V3 pin (to the In2 plane) and every
+  +1V1 pin (to a 0.5 mm +1V1 "C" on B.Cu around the chip, like RPi's)
+- 100 nF caps in columns beside the pins, with shared GND vias
+- the crystal right beside XIN/XOUT, with XOUT's series resistor in line and no
+  vias or other signals near it
+- USB upstream D+/D− as a coupled pair from J1 to the hub over solid GND, kept
+  more than 3 mm from the mounting hole; the CC pull-downs
 - each tact switch's internally-connected pad pairs joined
 
-After autorouting: GND stitching vias wherever the outer pours filled
-(~330), extra vias into any via-less pour piece, then fill.
-Result: 0 unconnected, 0 non-cosmetic DRC violations.
+Then Freerouting does the rest (`make route`,
+[route.py](../hardware/scripts/route.py)): 4 differently-configured runs in
+parallel, best kept. After autorouting: GND stitching vias wherever the outer
+pours filled, extra vias into any via-less pour piece, then fill.
+Result: 849 track segments, 467 vias; 0 unconnected, 0 non-cosmetic DRC violations.
 
 - **4 layers** (signal / GND / power / signal). The hub's upstream link runs
   at USB high speed (480 Mbit/s) and needs 90 Ω pairs over a solid ground
@@ -115,8 +128,9 @@ Result: 0 unconnected, 0 non-cosmetic DRC violations.
 - **Everything assembled on the top side**, so JLCPCB assembly is
   single-sided. That makes the MCU corner tight: the original put its MCU on
   the back.
-- Design rules match JLCPCB 4-layer capabilities with margin (0.12 mm
-  clearance, 0.2 mm tracks, 0.5/0.25 mm vias).
+- Design rules match JLCPCB 4-layer capabilities with margin (0.1 mm
+  clearance, 0.15 mm tracks, 0.5/0.25 mm vias; 0.4/0.2 mm for the vias under
+  the MCU).
 
 ## Firmware
 

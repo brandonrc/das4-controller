@@ -36,18 +36,19 @@ lib_search_paths[KICAD9].append(os.environ.get("KICAD_SYMBOL_DIR", "/usr/share/k
 # ---------------------------------------------------------------------------
 # GPIO assignment. Any RP2350 GPIO can do any of these jobs, so this table is
 # the only thing to change when layout wants a different pin order.
-# Chosen for layout: on the RP2350B, GPIO21-39 run along the package's bottom
-# and right edges (towards J4 and the hub), GPIO4-20 along the left edge.
 # J4 pin k -> GPIO(40 - k): pin 1 -> GPIO39 ... pin 26 -> GPIO14. That order
-# follows the RP2350B's pins round the package (right side top->bottom, then
-# bottom right->left, then left side), and J4's pins run top->bottom, so the
-# 26 lines fan out to J4 without crossing each other. It also keeps them off
-# GPIO40-47, which (unlike GPIO0-39) are not 5 V tolerant.
+# follows the RP2350B's pins round the package, and J4's pins run in order
+# too, so the 26 lines fan out to J4 without crossing each other. It also
+# keeps them off GPIO40-47, which (unlike GPIO0-39) are not 5 V tolerant.
 J4_GPIO = [40 - k for k in range(1, 27)]
-BUTTON_GPIO = [4, 5, 6, 7, 8]          # SW1..SW5
+# Buttons and the LED data line sit on GPIO42-47. Those are the RP2350B's
+# ADC pins (not 5 V tolerant), which is fine for buttons/LED but keeps J4 on
+# 5 V-tolerant pins. With U1 rotated 90 degrees on the board they face up,
+# towards the buttons.
+BUTTON_GPIO = [45, 46, 47, 43, 42]     # SW1..SW5
 ENC_A_GPIO, ENC_B_GPIO = 9, 10
-LED_DATA_GPIO = 11                     # WS2812 chain: NUM -> CAPS -> SCROLL
-# spare: GPIO0-3, GPIO12-13, GPIO40-47 (ADC-capable, not 5 V tolerant)
+LED_DATA_GPIO = 44                     # WS2812 chain: NUM -> CAPS -> SCROLL
+# spare: GPIO0-8, GPIO11-13, GPIO40-41
 
 # ---------------------------------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"
@@ -91,9 +92,10 @@ def R(value, a, b, ref=None):
     return p
 
 
-def C(value, a, b=None):
+def C(value, a, b=None, ref=None):
     code, fp = CAP[value]
-    p = lcsc(Part("Device", "C", value=value, footprint=fp), code)
+    kw = {"ref": ref} if ref else {}
+    p = lcsc(Part("Device", "C", value=value, footprint=fp, **kw), code)
     p[1] += a
     p[2] += b if b is not None else gnd
     return p
@@ -169,21 +171,24 @@ for ref, n, dm, dp in (("J2", 1, "DM1", "DP1"), ("J3", 2, "DM2", "DP2")):
     C("100n", port_vbus)
 
 # --- RP2350B -----------------------------------------------------------------
+# Parts around the MCU get references that encode the MCU pin they serve
+# (C164 = the cap on pin 64, R231 = the resistor on pin 31, ...), so board
+# placement can put each one next to its pin.
 mcu = jlc("RP2350B_C42415655", "U1", "C42415655", "RP2350B")
 gnd += mcu["GND"], mcu["VREG_PGND"]
-for p in mcu["IOVDD"]:                   # 8 pins, 100 nF each
-    v33 += p
-    C("100n", p)
-for name in ("ADC_AVDD", "USB_OTP_VDD", "QSPI_IOVDD"):
-    v33 += mcu[name]
-    C("100n", mcu[name])
-v33 += mcu["VREG_VIN"]
-C("4.7u", mcu["VREG_VIN"])
-C("10u", v33)
-vreg_avdd = Net("VREG_AVDD")             # 33R + 4.7u RC filter
-R("33", v33, vreg_avdd)
+for n in (5, 15, 24, 29, 41, 50, 60, 76):      # IOVDD, 100 nF each
+    v33 += mcu[n]
+    C("100n", mcu[n], ref=f"C{100 + n}")
+for n in (59, 68, 69):                          # ADC_AVDD, USB_OTP_VDD, QSPI_IOVDD
+    v33 += mcu[n]
+    C("100n", mcu[n], ref=f"C{100 + n}")
+v33 += mcu["VREG_VIN"]                          # pin 64
+C("4.7u", mcu["VREG_VIN"], ref="C164")
+C("10u", v33, ref="C190")                       # bulk
+vreg_avdd = Net("VREG_AVDD")                    # pin 61: 33R + 4.7u RC filter
+R("33", v33, vreg_avdd, ref="R161")
 vreg_avdd += mcu["VREG_AVDD"]
-C("4.7u", vreg_avdd)
+C("4.7u", vreg_avdd, ref="C161")
 # Core regulator: VREG_LX -> 3.3 uH -> +1V1. RPi wants the inductor's
 # polarity dot on the +1V1 end. This footprint (easyeda2kicad) puts the dot on
 # pad 2, so pad 2 goes to +1V1 (design review 2026-09-25: RPi's own board has
@@ -193,12 +198,12 @@ lx += mcu["VREG_LX"]
 l1 = jlc("AOTA-B201610S3R3-101-T", "L1", "C42411119", "3.3uH")
 l1[2] += v11
 l1[1] += lx
-v11 += mcu["VREG_FB"]
-for p in mcu["DVDD"]:                    # 3 pins, 100 nF each
-    v11 += p
-    C("100n", p)
-C("4.7u", v11)
-C("4.7u", v11)                           # 2nd one at a DVDD pin away from the LX loop
+v11 += mcu["VREG_FB"]                           # pin 65
+C("4.7u", v11, ref="C165")                      # regulator output cap, at L1
+C("4.7u", v11, ref="C166")                      # 2nd, at a DVDD pin away from the LX loop
+for n in (10, 32, 51):                          # DVDD, 100 nF each
+    v11 += mcu[n]
+    C("100n", mcu[n], ref=f"C{100 + n}")
 
 # Crystal: XIN direct, XOUT through 1k, 15 pF load caps (RPi minimal design)
 xm = jlc("ABM8-272-T3_C20625731", "Y1", "C20625731", "12MHz")
@@ -206,9 +211,9 @@ xin, xout_x = Net("XIN"), Net("XOUT_XTAL")
 xin += mcu["XIN"], xm[1]
 xout_x += xm[3]
 gnd += xm[2], xm[4]
-R("1k", mcu["XOUT"], xout_x)
-C("15p", xin)
-C("15p", xout_x)
+R("1k", mcu["XOUT"], xout_x, ref="R231")
+C("15p", xin, ref="C230")
+C("15p", xout_x, ref="C231")
 
 # QSPI flash, 16 MB
 fl = jlc("W25Q128JVSIQTR", "U3", "C97521", "W25Q128JVS")
@@ -221,12 +226,12 @@ Net("QSPI_SD2").connect(mcu["QSPI_SD2"], fl["IO2"])
 Net("QSPI_SD3").connect(mcu["QSPI_SD3"], fl["IO3"])
 v33 += fl["VCC"]
 gnd += fl["GND"]
-C("100n", fl["VCC"])
-R("10k", v33, qspi_ss)
+C("100n", fl["VCC"], ref="C300")
+R("10k", v33, qspi_ss, ref="R301")
 
 # BOOTSEL (QSPI_SS -> 1k -> button -> GND) and RUN (reset) buttons
 boot = Net("USB_BOOT")
-R("1k", qspi_ss, boot)
+R("1k", qspi_ss, boot, ref="R302")
 sb = jlc("TS-1187A-B-A-B", "SW6", "C318884", "BOOTSEL")   # pads 1-2 | 3-4
 sb[1] += boot
 sb[2] += boot
@@ -238,15 +243,15 @@ sr = jlc("TS-1187A-B-A-B", "SW7", "C318884", "RESET")
 sr[1] += run
 sr[2] += run
 run_btn += sr[3], sr[4]
-R("1k", run_btn, gnd)
+R("1k", run_btn, gnd, ref="R303")
 
 # USB from hub port 3, series resistors at the MCU (RPi uses 27R; 22R is a
 # JLCPCB Basic part and fine at full speed)
 mcu_dp, mcu_dm = Net("USB_MCU_D+"), Net("USB_MCU_D-")
 mcu_dp += hub["DP3"]
 mcu_dm += hub["DM3"]
-R("22", mcu_dp, mcu["USB_DP"])
-R("22", mcu_dm, mcu["USB_DM"])
+R("22", mcu_dp, mcu["USB_DP"], ref="R267")
+R("22", mcu_dm, mcu["USB_DM"], ref="R266")
 
 # SWD debug pads (not assembled: bare copper)
 for ref, sig in (("TP1", mcu["SWCLK"]), ("TP2", mcu["SWDIO"]), ("TP3", gnd), ("TP4", v33),

@@ -30,14 +30,17 @@ mm = pcbnew.FromMM
 CLASSES = {
     # 0.1 mm clearance: the USB-C's VBUS/GND pads are 0.10 mm apart, so any
     # bigger clearance makes Freerouting treat them as unreachable
-    "Power": (0.3, 0.1, ["+5V"]),        # ~1 A total to the USB-A ports (plus pours)
+    "Power": (0.5, 0.1, ["+5V"]),        # ~1 A total to the USB-A ports
+    "Supply": (0.3, 0.1, ["+3V3"]),
     "Core": (0.3, 0.1, ["+1V1", "VREG_LX", "VREG_AVDD"]),
     # USB: 0.2 mm tracks keep the pairs tight; proper 90 ohm tuning comes later
     "USB": (0.2, 0.1, ["USB_UP_D+", "USB_UP_D-", "USB_MCU_D+", "USB_MCU_D-",
                         "USB_A1_D+", "USB_A1_D-", "USB_A2_D+", "USB_A2_D-"]),
 }
-PLANES = [(pcbnew.In1_Cu, "GND")]                   # solid, routed through vias only
-POURS = [(pcbnew.In2_Cu, "+3V3"), (pcbnew.F_Cu, "GND"), (pcbnew.B_Cu, "GND")]
+# In1 solid GND, In2 solid +3V3 (layout review: 3V3 was starved when In2
+# carried signals); signals on F.Cu and B.Cu only
+PLANES = [(pcbnew.In1_Cu, "GND"), (pcbnew.In2_Cu, "+3V3")]
+POURS = [(pcbnew.F_Cu, "GND"), (pcbnew.B_Cu, "GND")]
 
 
 def add_zone(board, layer, netname, outline, priority=0):
@@ -60,8 +63,10 @@ def add_zone(board, layer, netname, outline, priority=0):
 VIA_D, VIA_DRILL, GAP = 0.6, 0.3, 0.15
 
 
-def obstacles(board, net):
-    """(kind, geometry, half-width) for every copper item not on `net`."""
+def obstacles(board, net, all_pads=False):
+    """(kind, geometry, half-width) for every copper item not on `net`
+    (all_pads: every pad counts, even same-net ones, e.g. so stitching vias
+    never land inside a pad)."""
     obs = []
     for t in board.GetTracks():
         if t.GetNetname() == net:
@@ -72,7 +77,7 @@ def obstacles(board, net):
             obs.append(("seg", (t.GetStart(), t.GetEnd()), t.GetWidth() / 2))
     for fp in board.GetFootprints():
         for p in fp.Pads():
-            if p.GetNetname() == net and p.GetNetname():
+            if p.GetNetname() == net and p.GetNetname() and not all_pads:
                 continue
             obs.append(("box", p.GetBoundingBox(), 0))
     return obs
@@ -142,7 +147,7 @@ def stitch(board, edge, net="GND", pitch=1.25, spacing=2.0):
     """GND vias wherever the outer GND pours actually filled: ties the pours
     to the In1 plane (and so to each other) and shields the signal layers.
     Needs the pours filled first."""
-    obs = obstacles(board, net)
+    obs = obstacles(board, net, all_pads=True)
     holes = [(v.GetPosition(), v.GetDrill() / 2) for v in board.GetTracks()
              if v.GetClass() == "PCB_VIA"]
     holes += [(p.GetPosition(), max(p.GetDrillSizeX(), p.GetDrillSizeY()) / 2)
@@ -223,30 +228,125 @@ def decouple_vias(board, center_ref="U1", radius=9.0, supplies=("+3V3", "+1V1", 
     print(f"decouple: {n} GND vias")
 
 
+def tie_switch_pads(board, refs=("SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7")):
+    """Tact switches connect pads 1-2 and 3-4 inside the part. Mirror that
+    with a short F.Cu track under the body, so each pair is also joined on the
+    board (and no pad ends up alone on a small piece of pour)."""
+    n = 0
+    for ref in refs:
+        fp = board.FindFootprintByReference(ref)
+        pads = {p.GetNumber(): p for p in fp.Pads()}
+        for a, b in (("1", "2"), ("3", "4")):
+            pa, pb = pads[a], pads[b]
+            if pa.GetNetname() != pb.GetNetname():
+                continue
+            obs = obstacles(board, pa.GetNetname())
+            A, B = pa.GetPosition(), pb.GetPosition()
+            pts = [pcbnew.VECTOR2I(int(A.x + (B.x - A.x) * f), int(A.y + (B.y - A.y) * f))
+                   for f in (0.2, 0.35, 0.5, 0.65, 0.8)]
+            if all(clear(q, mm(0.15 + 0.1), obs) for q in pts):
+                track(board, A, B, pcbnew.F_Cu, pa.GetNetname(), 0.3)   # locked
+                n += 1
+            else:
+                print(f"tie: {ref} pads {a}-{b} blocked")
+    return n
+
+
+def plane_fanout(board, nets=("+3V3", "GND"), d=0.45, drill=0.2, skip=("U1",)):
+    """Every SMD pad on a plane net that nothing hand-routed touches gets its
+    own short stub and via into the plane (In2 +3V3, In1 GND). Tries the
+    direction away from the part first, then the others, nearest first."""
+    import math
+    holes = [(v.GetPosition(), v.GetDrill() / 2) for v in board.GetTracks() if v.GetClass() == "PCB_VIA"]
+    holes += [(p.GetPosition(), max(p.GetDrillSizeX(), p.GetDrillSizeY()) / 2)
+              for fp in board.GetFootprints() for p in fp.Pads() if p.HasHole()]
+    outline = pcbnew.SHAPE_POLY_SET()
+    board.GetBoardPolygonOutlines(outline, True)
+    edge = outline.Outline(0)
+    added, failed = 0, []
+    for fp in board.GetFootprints():
+        if fp.GetReference() in skip:
+            continue
+        for pad in fp.Pads():
+            net = pad.GetNetname()
+            if net not in nets or pad.HasHole() or not pad.IsOnLayer(pcbnew.F_Cu):
+                continue
+            if any(t.GetNetname() == net and t.GetLayer() == pcbnew.F_Cu
+                   and (pad.HitTest(t.GetStart()) or pad.HitTest(t.GetEnd()))
+                   for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"):
+                continue
+            obs = [o for o in obstacles(board, net, all_pads=True)
+                   if not (o[0] == "box" and o[1].GetCenter() == pad.GetBoundingBox().GetCenter())]
+            c, fc = pad.GetPosition(), fp.GetPosition()
+            a0 = math.atan2(c.y - fc.y, c.x - fc.x) if c != fc else 0.0
+            bb = pad.GetBoundingBox()
+            reach = max(bb.GetWidth(), bb.GetHeight()) / 2
+            done = False
+            for extra in (0.35, 0.5, 0.7, 0.9, 1.2):
+                for k in (0, 1, -1, 2, -2, 3, -3, 4):
+                    a = a0 + k * math.pi / 4
+                    r = reach + mm(extra)
+                    v = pcbnew.VECTOR2I(int(c.x + r * math.cos(a)), int(c.y + r * math.sin(a)))
+                    if pad.HitTest(v):
+                        continue
+                    path_ok = all(clear(pcbnew.VECTOR2I(int(c.x + (v.x - c.x) * f), int(c.y + (v.y - c.y) * f)),
+                                        mm(0.125 + 0.11), obs) for f in (0.5, 0.65, 0.8, 0.9))
+                    if (path_ok and clear(v, mm(d / 2 + 0.12), obs)
+                            and edge.PointInside(v) and edge.SquaredDistance(v, True) > mm(d / 2 + 0.35) ** 2
+                            and all(((v.x - q.x) ** 2 + (v.y - q.y) ** 2) ** 0.5 > rr + mm(drill / 2 + 0.22)
+                                    for q, rr in holes)):
+                        t = track(board, c, v, pcbnew.F_Cu, net, 0.25)
+                        via = add_via(board, v, net)
+                        via.SetWidth(mm(d))
+                        via.SetDrill(mm(drill))
+                        via.SetLocked(True)
+                        holes.append((v, mm(drill / 2)))
+                        added += 1
+                        done = True
+                        break
+                if done:
+                    break
+            if not done:
+                failed.append(f"{fp.GetReference()}.{pad.GetNumber()}")
+    print(f"plane fanout: {added} vias" + (f", no room at {', '.join(failed)}" if failed else ""))
+
+
+def drop_unused_vias(board, keep_nets=("GND", "+3V3")):
+    """Signal vias Freerouting didn't use (tracks on only one layer): remove
+    the via, and the stub too if it's the only thing that reached it."""
+    removed = 0
+    for v in [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA"]:
+        if v.GetNetname() in keep_nets:
+            continue
+        p, r = v.GetPosition(), v.GetWidth(pcbnew.F_Cu) / 2
+        # touching, not just ending there: Freerouting also runs tracks
+        # straight through vias
+        at = [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"
+              and t.GetNetname() == v.GetNetname()
+              and seg_dist(p, t.GetStart(), t.GetEnd()) <= r + t.GetWidth() / 2]
+        if len({t.GetLayer() for t in at}) >= 2:
+            continue
+        board.Remove(v)
+        ends = lambda t: min(((q.x - p.x) ** 2 + (q.y - p.y) ** 2) ** 0.5
+                             for q in (t.GetStart(), t.GetEnd())) <= r
+        if len(at) == 1 and ends(at[0]):    # a stub that only led to the via
+            board.Remove(at[0])
+        removed += 1
+    print(f"cleanup: {removed} unused signal vias removed")
+
+
 def preroute(board):
-    # RP2350B VREG_PGND (pad 62) -> the GND exposed pad underneath, through the
-    # clear area inside the pad ring (no room for a via outside)
-    p62, ep = pad_pos(board, "U1", "62"), pad_pos(board, "U1", "81")
-    mid = pcbnew.VECTOR2I(p62.x, ep.y - mm(2.4))          # just inside the pad ring
-    edge = pcbnew.VECTOR2I(ep.x + mm(1.2), ep.y - mm(1.2))  # inside the 3.4 mm EP
-    track(board, p62, mid, pcbnew.F_Cu, "GND", 0.25)
-    track(board, mid, edge, pcbnew.F_Cu, "GND", 0.25)
+    from critical import critical     # hand layout of the critical nets
+    critical(board)
     print(f"tie: {tie_switch_pads(board)} switch pad pairs joined")
-    # MCU decoupling: one GND via right next to each cap's GND pad (placement
-    # points the GND pads away from the MCU), before autorouting
-    decouple_vias(board)
-    # Lock LEDs: VDD pins (pad 2) sit in one straight column; join them on In2
-    # (on B.Cu this line walled off the key-matrix bus)
-    pts = [pad_pos(board, f"D{i}", "2") for i in (1, 2, 3)]
-    for a, b in zip(pts, pts[1:]):
-        track(board, a, b, pcbnew.In2_Cu, "+5V", 0.4)
+    plane_fanout(board)
 
 
 def patch_fragments(board, net="GND", d=0.45, drill=0.2):
     """After filling: any piece of an outer GND pour with no GND via in it
     gets one (a small 0.45/0.2 mm via, placed where it fits inside the
     piece and clears everything on the other layers)."""
-    obs = obstacles(board, net)
+    obs = obstacles(board, net, all_pads=True)
     holes = [(v.GetPosition(), v.GetDrill() / 2) for v in board.GetTracks() if v.GetClass() == "PCB_VIA"]
     holes += [(p.GetPosition(), max(p.GetDrillSizeX(), p.GetDrillSizeY()) / 2)
               for fp in board.GetFootprints() for p in fp.Pads() if p.HasHole()]
@@ -288,46 +388,6 @@ def patch_fragments(board, net="GND", d=0.45, drill=0.2):
                       f"({pcbnew.ToMM(bb.GetCenter().x):.1f}, {pcbnew.ToMM(bb.GetCenter().y):.1f})")
     print(f"patch: {added} vias into isolated GND pour pieces")
     return added
-
-
-def tie_switch_pads(board, refs=("SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7")):
-    """Tact switches connect pads 1-2 and 3-4 inside the part. Mirror that
-    with a short F.Cu track under the body, so each pair is also joined on the
-    board (and no pad ends up alone on a small piece of pour)."""
-    n = 0
-    for ref in refs:
-        fp = board.FindFootprintByReference(ref)
-        pads = {p.GetNumber(): p for p in fp.Pads()}
-        for a, b in (("1", "2"), ("3", "4")):
-            pa, pb = pads[a], pads[b]
-            if pa.GetNetname() != pb.GetNetname():
-                continue
-            obs = obstacles(board, pa.GetNetname())
-            A, B = pa.GetPosition(), pb.GetPosition()
-            pts = [pcbnew.VECTOR2I(int(A.x + (B.x - A.x) * f), int(A.y + (B.y - A.y) * f))
-                   for f in (0.2, 0.35, 0.5, 0.65, 0.8)]
-            if all(clear(q, mm(0.15 + 0.1), obs) for q in pts):
-                track(board, A, B, pcbnew.F_Cu, pa.GetNetname(), 0.3)   # locked
-                n += 1
-            else:
-                print(f"tie: {ref} pads {a}-{b} blocked")
-    return n
-
-
-def tie_pads(board, pairs):
-    """Post-route: join two same-net pads with a straight F.Cu track, if the
-    path is clear (for pads that end up alone on a small piece of pour)."""
-    for r1, n1, r2, n2 in pairs:
-        a, b = pad_pos(board, r1, n1), pad_pos(board, r2, n2)
-        net = next(p for p in board.FindFootprintByReference(r1).Pads() if p.GetNumber() == n1).GetNetname()
-        obs = obstacles(board, net)
-        pts = [pcbnew.VECTOR2I(int(a.x + (b.x - a.x) * f), int(a.y + (b.y - a.y) * f))
-               for f in (0.25, 0.5, 0.75)]
-        if all(clear(q, mm(0.125 + 0.1), obs) for q in pts):
-            track(board, a, b, pcbnew.F_Cu, net, 0.25)
-            print(f"tie: {r1}.{n1}-{r2}.{n2} joined")
-        else:
-            print(f"tie: {r1}.{n1}-{r2}.{n2} blocked")
 
 
 def main():
@@ -398,11 +458,7 @@ def route(board, edge):
     for t in board.GetTracks():
         if t.GetClass() == "PCB_TRACK" and t.GetWidth() < mm(0.1):
             t.SetWidth(mm(0.1))
-
-    fanout(board, [("C31", "2", "GND"), ("U3", "8", "+3V3")])
-    # the USB-C CC pull-downs sit side by side; R1's GND pad has no room for a
-    # via, so tie it to R2's
-    tie_pads(board, [("R1", "2", "R2", "2")])
+    drop_unused_vias(board)
 
     for layer, net in POURS:
         add_zone(board, layer, net, edge, priority=0)
