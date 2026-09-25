@@ -4,6 +4,7 @@
 #
 #   make            circuit -> netlist -> board -> renders + fit-check PDF -> DRC
 #   make bom        docs/bom.md with live JLCPCB stock (needs internet)
+#   make fab        JLCPCB order files in build/jlcpcb/
 #   make parts      re-fetch JLC footprints/symbols/3D models (needs internet)
 
 PCB  := hardware/das4-controller.kicad_pcb
@@ -17,7 +18,7 @@ KICAD10_3DMODEL_DIR ?= /run/host/var/lib/flatpak/runtime/org.kicad.KiCad.Library
 export KICAD10_3DMODEL_DIR
 RENDER := kicad-cli pcb render --width 1600 --height 2000 --zoom 0.9 --quality high --floor
 
-.PHONY: all netlist board docs drc bom parts clean
+.PHONY: all netlist board docs drc bom fab parts clean
 
 all: board docs drc
 
@@ -47,10 +48,14 @@ drc: board
 bom: netlist
 	python3 hardware/scripts/bom.py
 
-# LCSC parts fetched into hardware/lib (the LED has no EasyEDA model and uses
-# KiCad's LED_D5.0mm instead)
+# JLCPCB upload files -> build/jlcpcb/ (gerber zip, bom.csv, cpl.csv)
+fab: board
+	$(PY) hardware/scripts/jlc_fab.py
+
+# LCSC parts fetched into hardware/lib with easyeda2kicad (plain Rs/Cs, the
+# AMS1117 and the diode use KiCad's stock footprints)
 JLC_PARTS := C42415655 C4154405 C165948 C456018 C97521 C20625731 C42411119 \
-             C82942 C7519 C20799 C8545 C2837531 C455280 C351238
+             C2837531 C318884 C351238 C4154875
 parts: $(DEPS)
 	cd hardware/lib && PYTHONPATH=../../$(DEPS) python3 -m easyeda2kicad --full --project-relative \
 		--overwrite --lcsc_id $(JLC_PARTS) --output $$PWD/jlc

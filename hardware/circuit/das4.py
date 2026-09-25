@@ -52,7 +52,7 @@ C0603 = "Capacitor_SMD:C_0603_1608Metric"
 C0805 = "Capacitor_SMD:C_0805_2012Metric"
 
 # value -> LCSC basic parts (all checked in stock, see docs/bom.md)
-RES = {"0": "C17168", "27": "C25100", "33": "C25105", "330": "C25104",
+RES = {"0": "C17168", "22": "C25092", "33": "C25105", "330": "C25104",
        "1k": "C11702", "5.1k": "C25905", "10k": "C25744"}
 CAP = {"100n": ("C1525", C0402), "1u": ("C52923", C0402), "4.7u": ("C23733", C0402),
        "15p": ("C1548", C0402), "10u": ("C19702", C0603), "22u": ("C45783", C0805)}
@@ -60,6 +60,13 @@ CAP = {"100n": ("C1525", C0402), "1u": ("C52923", C0402), "4.7u": ("C23733", C04
 
 def lcsc(part, code):
     part.fields["LCSC"] = code
+    return part
+
+
+def hand(part):
+    """Soldered by hand: kept out of the JLCPCB BOM/CPL (no Extended fee).
+    The LCSC number stays so docs/bom.md can list what to buy."""
+    part.fields["Assembly"] = "hand"
     return part
 
 
@@ -107,25 +114,20 @@ C("22u", vbus)
 C("100n", vbus)
 
 
-def esd(ref, dp, dm):
-    """USBLC6-2SC6: I/O1 = pins 1+6, I/O2 = pins 3+4, VBUS = 5, GND = 2."""
-    u = jlc("USBLC6-2SC6", ref, "C7519")
-    dm += u[1], u[6]
-    dp += u[3], u[4]
-    vbus.connect(u[5])
-    gnd.connect(u[2])
-    return u
+# No separate ESD chips: the CH334R has 6 kV ESD protection on all its USB
+# pins (datasheet, features), and the RP2350B sits behind the hub.
 
-
-esd("U5", usb_up_dp, usb_up_dm)
 
 # --- 3.3 V regulator (hub + MCU + flash, ~200 mA) ----------------------------
-ldo = jlc("ME6211C33M5G-N", "U4", "C82942")
-vbus += ldo["VIN"], ldo["CE"]
-gnd += ldo["VSS"]
-v33 += ldo["VOUT"]
+# AMS1117 (JLCPCB Basic). ~1 V dropout at 200 mA, so it needs >4.3 V in; USB
+# gives 4.75-5.25 V at the port. Wants 22 uF on the output.
+ldo = lcsc(Part("Regulator_Linear", "AMS1117-3.3", ref="U4",
+                footprint="Package_TO_SOT_SMD:SOT-223-3_TabPin2"), "C6186")
+vbus += ldo["VI"]
+gnd += ldo["GND"]
+v33 += ldo["VO"]
 C("10u", vbus)
-C("10u", v33)
+C("22u", v33)
 C("10u", v33)
 
 # --- CH334R USB 2.0 hub ------------------------------------------------------
@@ -146,21 +148,18 @@ gnd += xh[2], xh[4]
 # RESET#/CDP left open (internal pull-up), port 4 unused
 
 # --- USB-A downstream ports --------------------------------------------------
-for ref, fref, eref, n, dm, dp in (("J2", "F1", "U6", 1, "DM1", "DP1"),
-                                   ("J3", "F2", "U7", 2, "DM2", "DP2")):
-    port_dp, port_dm, port_vbus = Net(f"USB_A{n}_D+"), Net(f"USB_A{n}_D-"), Net(f"VBUS_A{n}")
-    j = jlc("AF90-WJDG", ref, "C456018", f"USB-A {n}")
+# VBUS straight from the PC's 5 V: the PC's port already limits current, so
+# no polyfuses (they're JLCPCB Extended parts).
+for ref, n, dm, dp in (("J2", 1, "DM1", "DP1"), ("J3", 2, "DM2", "DP2")):
+    port_dp, port_dm, port_vbus = Net(f"USB_A{n}_D+"), Net(f"USB_A{n}_D-"), vbus
+    j = hand(jlc("AF90-WJDG", ref, "C456018", f"USB-A {n}"))
     # pins: 1 VCC, 2 D-, 3 D+, 4 GND, 5 shield
     port_vbus += j[1]
     gnd += j[4], j[5]
     port_dp += j[3], hub[dp]
     port_dm += j[2], hub[dm]
-    f = jlc("SMD1206P050TF", fref, "C20799", "500mA")
-    f[1] += vbus
-    f[2] += port_vbus
     C("22u", port_vbus)
     C("100n", port_vbus)
-    esd(eref, port_dp, port_dm)
 
 # --- RP2350B -----------------------------------------------------------------
 mcu = jlc("RP2350B_C42415655", "U1", "C42415655", "RP2350B")
@@ -218,23 +217,26 @@ R("10k", v33, qspi_ss)
 # BOOTSEL (QSPI_SS -> 1k -> button -> GND) and RUN (reset) buttons
 boot = Net("USB_BOOT")
 R("1k", qspi_ss, boot)
-sb = jlc("TS-1088R-02026", "SW6", "C455280", "BOOTSEL")
+sb = jlc("TS-1187A-B-A-B", "SW6", "C318884", "BOOTSEL")   # pads 1-2 | 3-4
 sb[1] += boot
-sb[2] += gnd
+sb[2] += boot
+gnd += sb[3], sb[4]
 run = Net("RUN")
 run += mcu["RUN"]
 run_btn = Net("RUN_BTN")
-sr = jlc("TS-1088R-02026", "SW7", "C455280", "RESET")
+sr = jlc("TS-1187A-B-A-B", "SW7", "C318884", "RESET")
 sr[1] += run
-sr[2] += run_btn
+sr[2] += run
+run_btn += sr[3], sr[4]
 R("1k", run_btn, gnd)
 
-# USB from hub port 3, 27R series resistors at the MCU
+# USB from hub port 3, series resistors at the MCU (RPi uses 27R; 22R is a
+# JLCPCB Basic part and fine at full speed)
 mcu_dp, mcu_dm = Net("USB_MCU_D+"), Net("USB_MCU_D-")
 mcu_dp += hub["DP3"]
 mcu_dm += hub["DM3"]
-R("27", mcu_dp, mcu["USB_DP"])
-R("27", mcu_dm, mcu["USB_DM"])
+R("22", mcu_dp, mcu["USB_DP"])
+R("22", mcu_dm, mcu["USB_DM"])
 
 # SWD debug pads (not assembled: bare copper)
 for ref, sig in (("TP1", mcu["SWCLK"]), ("TP2", mcu["SWDIO"]), ("TP3", gnd), ("TP4", v33)):
@@ -260,31 +262,33 @@ for i, g in enumerate(J4_GPIO, start=1):
 
 # --- Buttons (internal pull-ups, active low) --------------------------------
 for i, g in enumerate(BUTTON_GPIO, start=1):
-    sw = jlc("KH-6X6X5H-STM", f"SW{i}", "C2837531", f"Button {i}")
+    sw = hand(jlc("KH-6X6X5H-STM", f"SW{i}", "C2837531", f"Button {i}"))
     btn = Net(f"BTN{i}")
     btn += gpio(g), sw[1], sw[2]
     gnd += sw[3], sw[4]
 
 # --- Volume encoder (no switch; A/B with internal pull-ups, C to GND) -------
-enc = jlc("EC12E24204A2", "ENC1", "C351238", "EC12E24204A2")
+enc = hand(jlc("EC12E24204A2", "ENC1", "C351238", "EC12E24204A2"))
 Net("ENC_A").connect(enc["A"], gpio(ENC_A_GPIO))
 Net("ENC_B").connect(enc["B"], gpio(ENC_B_GPIO))
 gnd += enc["C"], enc["D"], enc["E"]
 
 # --- Lock LEDs: 3 x WS2812D (5 mm THT, RGB), any colour from firmware -------
-# One GPIO drives the chain NUM -> CAPS -> SCROLL. The LEDs run from 5 V and
-# want a 5 V data signal (VIH = 0.7 * VDD = 3.5 V), so a 74AHCT1G125 shifts
-# the 3.3 V GPIO up. 33R at the buffer output damps the edge.
-buf = jlc("74AHCT1G125GV", "U8", "C52140417")
-vbus += buf["VCC"]
-gnd += buf["GND"], buf[1]                # pin 1 = /OE, tied low: always on
-Net("LED_DATA_3V3").connect(buf["A"], gpio(LED_DATA_GPIO))
-C("100n", buf["VCC"])
+# One GPIO drives the chain NUM -> CAPS -> SCROLL. WS2812s want data above
+# 0.7 x VDD; at 5 V that's 3.5 V, more than a 3.3 V GPIO. The classic fix
+# without a level-shifter chip: run the *first* LED from 5 V minus a diode
+# (~4.3 V, threshold ~3.0 V). Its output then drives the next LED at full 5 V.
+d_drop = lcsc(Part("Device", "D", ref="D4", value="1N4148W",
+                   footprint="Diode_SMD:D_SOD-123"), "C81598")
+led1_vdd = Net("LED1_VDD")
+d_drop["A"] += vbus
+d_drop["K"] += led1_vdd
 din = Net("LED_DIN1")
-R("33", buf["Y"], din)
+R("33", gpio(LED_DATA_GPIO), din)
 for i, label in enumerate(("NUM", "CAPS", "SCROLL"), start=1):
-    led = jlc("WS2812D-F5-12MA-C1", f"D{i}", "C4154875", f"{label} (RGB)")
-    vbus += led["VDD"]
+    led = hand(jlc("WS2812D-F5-12MA-C1", f"D{i}", "C4154875", f"{label} (RGB)"))
+    supply = led1_vdd if i == 1 else vbus
+    supply += led["VDD"]
     gnd += led["GND"]
     din += led["Din"]
     C("100n", led["VDD"])

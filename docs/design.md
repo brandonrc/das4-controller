@@ -66,15 +66,15 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 
 | Block | Part | Notes |
 |---|---|---|
-| MCU | RP2350B (QFN-80) | Copied from Raspberry Pi's minimal design: 12 MHz ABM8-272-T3 crystal (15 pF, 1 kΩ), 16 MB W25Q128JV flash, 3.3 µH AOTA-B201610S3R3 inductor for the on-chip 1.1 V regulator (pad 1 to +1V1), 33 Ω/4.7 µF on VREG_AVDD, 100 nF on every IOVDD/DVDD pin, 27 Ω on USB |
+| MCU | RP2350B (QFN-80) | Copied from Raspberry Pi's minimal design: 12 MHz ABM8-272-T3 crystal (15 pF, 1 kΩ), 16 MB W25Q128JV flash, 3.3 µH AOTA-B201610S3R3 inductor for the on-chip 1.1 V regulator (pad 1 to +1V1), 33 Ω/4.7 µF on VREG_AVDD, 100 nF on every IOVDD/DVDD pin. USB series resistors are 22 Ω (JLCPCB Basic) instead of RPi's 27 Ω |
 | USB hub | WCH CH334R (QSOP-16) | 4-port USB 2.0, built-in pull-ups/downs. Powered from 3.3 V on both V5 and VDD33 (datasheet §6.1). 12 MHz crystal with no load caps (they're on-chip). Port 1 → USB-A 1, port 2 → USB-A 2, port 3 → RP2350B, port 4 unused |
-| 3.3 V | ME6211C33 LDO, 500 mA | Low dropout (0.1 V), so USB voltage sag doesn't matter. Runs hub + MCU + flash (~200 mA) |
-| USB-C | HRO TYPE-C-31-M-12 | 5.1 kΩ on CC1/CC2 (we're a device), USBLC6-2SC6 ESD on D+/D- |
-| USB-A ×2 | SHOU HAN AF 90 WJDG | USB 2.0, right angle, through-hole. 500 mA polyfuse, 22 µF bulk and USBLC6-2SC6 ESD per port |
-| Encoder | Alps EC12E24204A2 | 12 mm, no switch, 24 detents, 15 mm D-shaft. A push switch can't fit: the body sits flush with the board edge, so switch pins would land off the board |
-| Buttons ×5 | 6 × 6 × 5 mm SMD tact | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
-| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (addressable) | Any colour from firmware (red, blue, per-lock, animations). One GPIO drives the chain NUM → CAPS → SCROLL through a 74AHCT1G125 3.3 V→5 V level shifter and a 33 Ω resistor; 100 nF per LED |
-| BOOTSEL / RESET | 4 × 3 mm SMD tact | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
+| 3.3 V | AMS1117-3.3 (JLCPCB Basic) | ~1 V dropout at our ~200 mA, so it needs >4.3 V in; a USB port gives 4.75–5.25 V. 22 µF on the output |
+| USB-C | HRO TYPE-C-31-M-12 | 5.1 kΩ on CC1/CC2 (we're a device). No separate ESD chip: the CH334R has 6 kV ESD protection on all its USB pins |
+| USB-A ×2 | SHOU HAN AF 90 WJDG (**hand-soldered**) | USB 2.0, right angle, through-hole. VBUS straight from the PC's 5 V (its port limits current); 22 µF + 100 nF per port |
+| Encoder | Alps EC12E24204A2 (**hand-soldered**) | 12 mm, no switch, 24 detents, 15 mm D-shaft. A push switch can't fit: the body sits flush with the board edge, so switch pins would land off the board |
+| Buttons ×5 | 6 × 6 × 5 mm SMD tact (**hand-soldered**) | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
+| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through 33 Ω. The first LED runs from 5 V through a 1N4148W diode (~4.3 V), so the 3.3 V data signal clears its 0.7 × VDD threshold; it re-drives the next LEDs at full 5 V. 100 nF per LED |
+| BOOTSEL / RESET | TS-1187A 5 × 5 mm SMD tact (JLCPCB Basic) | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
 | SWD | 4 test pads | SWCLK, SWDIO, GND, 3V3 |
 | J4 | 26-pin, **placeholder** | Pitch/type unknown, not factory-assembled: reuse the original connector or fit one by hand |
 
@@ -118,7 +118,7 @@ firmware can give them "fun" functions.
 - [ ] Does the key PCB have per-key LEDs or diodes? The diode direction sets the scan direction.
 - [ ] Encoder: confirm 15 mm shaft / 24 detents is close enough (original: ~14 mm, 20 detents).
 - [ ] J4: check with a multimeter that no pin carries 5 V before connecting (they go straight to RP2350 GPIO).
-- [ ] Cut JLCPCB fees: 15 Extended part types (~$3 each). Candidates: hand-solder the LEDs/switches, merge values.
+- [x] Cut JLCPCB fees: down to 5 Extended types (RP2350B, CH334R, USB-C, inductor, crystal); 11 easy parts are hand-soldered.
 - [ ] Route the board (next step).
 - [ ] Caliper pass on everything marked *photo* in [measurements.md](measurements.md).
 - [ ] Case clearance under the board (bottom-side parts and J4 height).

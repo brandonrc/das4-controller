@@ -88,24 +88,23 @@ GROUPS = {
     "L1": (15.6, 28.2, 90),                    # core regulator inductor, by VREG_LX
     "Y1": (20.6, 14.6, 0), "R4": (17.9, 14.9, 90),          # MCU crystal
     "C31": (19.6, 12.2, 0), "C32": (21.8, 12.2, 0),
-    "SW6": (1.2, 17.5, 90), "SW7": (1.5, 26.5, 90),         # BOOTSEL, RESET (left edge)
-    "R7": (3.3, 30.0, 0),
+    "SW6": (27.2, 40.2, 0),                   # BOOTSEL
+    "SW7": (26.8, 8.0, 0), "R7": (22.4, 8.0, 90),           # RESET
     "TP1": (7.8, 38.0, 0), "TP2": (10.5, 38.0, 0), "TP3": (13.2, 38.0, 0), "TP4": (15.9, 38.0, 0),
     # Hub block, next to the USB-A ports
     "U2": (29.5, 30.0, 90),                   # CH334R
     "Y2": (27.0, 25.2, 0),
     "C6": (31.2, 25.2, 90), "C7": (32.6, 25.2, 90), "C8": (30.0, 34.4, 0),
-    # USB-A 1 (J2): ESD, fuse, bulk
-    "U6": (30.8, 40.2, 90), "F1": (27.0, 43.4, 0), "C9": (31.0, 43.8, 0), "C10": (34.0, 43.8, 0),
-    # USB-A 2 (J3)
-    "U7": (30.8, 10.4, 90), "F2": (27.0, 6.4, 0), "C11": (31.0, 6.4, 0), "C12": (34.0, 6.4, 0),
-    # USB-C input, ESD, CC resistors, 3.3 V regulator
-    "U5": (24.9, 78.4, 0), "R1": (27.0, 79.6, 90), "R2": (28.0, 79.6, 90),
-    "U4": (31.3, 78.6, 0), "C1": (34.8, 78.6, 90), "C2": (29.8, 81.4, 0),
-    "C3": (32.2, 81.5, 0), "C4": (30.6, 75.6, 0), "C5": (27.6, 75.6, 0),
-    # RGB lock LEDs: level shifter + series R by the first LED, a cap per LED
-    "U8": (11.2, 60.4, 0), "R10": (11.2, 58.0, 0), "C34": (13.4, 60.4, 90),
-    "C35": (11.2, 64.4, 0), "C36": (11.2, 55.3, 0), "C37": (11.2, 45.8, 0),
+    # USB-A bulk caps (VBUS is the PC's 5 V directly)
+    "C9": (31.0, 43.8, 0), "C10": (34.0, 43.8, 0),
+    "C11": (32.6, 7.2, 90), "C12": (34.4, 7.2, 90),
+    # USB-C input, CC resistors, AMS1117 3.3 V regulator
+    "R1": (23.6, 79.6, 90), "R2": (25.4, 80.3, 0),
+    "U4": (30.2, 76.6, 90), "C1": (34.8, 79.6, 90), "C2": (34.3, 82.6, 0),
+    "C3": (32.5, 70.6, 90), "C4": (24.2, 75.8, 90), "C5": (24.2, 72.4, 90),
+    # RGB lock LEDs: diode (first LED's supply), data resistor, a cap per LED
+    "D4": (11.2, 60.6, 0), "R10": (11.2, 58.0, 0),
+    "C34": (11.2, 64.4, 0), "C35": (11.2, 55.3, 0), "C36": (11.2, 45.8, 0),
 }
 
 # Parts whose own pad spacing is tighter than the board default (mm). The
@@ -267,10 +266,12 @@ def main():
         fp = load_fp(c["footprint"])
         fp.SetReference(ref)
         fp.SetValue(c["value"])
+        hand = c["fields"].get("Assembly") == "hand"
         if "LCSC" in c["fields"]:
             fp.SetField("LCSC", c["fields"]["LCSC"])
             fp.GetField("LCSC").SetVisible(False)
-        else:
+        if hand or "LCSC" not in c["fields"]:
+            # soldered by hand (or not a real part): keep out of JLCPCB BOM/CPL
             fp.SetExcludedFromBOM(True)
             fp.SetExcludedFromPosFiles(True)
         for t in [g for g in fp.GraphicalItems() if hasattr(g, "GetText") and g.GetText() == "REF**"]:

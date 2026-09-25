@@ -61,6 +61,19 @@ Open `hardware/das4-controller.kicad_pro` in KiCad 10 to look around.
 changes get overwritten on the next `make`. Once the outline is locked down we
 switch to editing in KiCad directly.
 
+## Ordering (JLCPCB)
+
+```sh
+distrobox enter pcb -- make fab     # -> build/jlcpcb/: gerber zip, bom.csv, cpl.csv
+```
+
+1. On jlcpcb.com upload the gerber zip. Pick **4 layers**, 1.6 mm, and leave the rest at defaults.
+2. Enable **PCB Assembly** (top side), upload `bom.csv` and `cpl.csv`, and check the placement preview.
+3. Order the "You solder" parts in [docs/bom.md](docs/bom.md) from LCSC (they can ship together).
+
+Until the board is routed, `make fab` names the zip `...-UNROUTED-quote-only`. It's good for a price
+quote, but it has no traces, so don't order it.
+
 ## License
 
 MIT, see [LICENSE](LICENSE). Not affiliated with Das Keyboard / Metadot.
