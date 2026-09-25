@@ -106,6 +106,22 @@ def clear(p, r, obs):
     return True
 
 
+def blocked(board, p, r, tracks_on=None):
+    """True if a via of radius r at p would break a keep-out rule area (or,
+    with tracks_on=layer, a track there would)."""
+    for z in board.Zones():
+        if not z.GetIsRuleArea():
+            continue
+        if tracks_on is None:
+            if not z.GetDoNotAllowVias():
+                continue
+        elif not (z.GetDoNotAllowTracks() and z.IsOnLayer(tracks_on)):
+            continue
+        if z.Outline().Contains(p) or z.Outline().SquaredDistance(p) < r * r:
+            return True
+    return False
+
+
 def add_via(board, p, net):
     v = pcbnew.PCB_VIA(board)
     v.SetPosition(p)
@@ -166,7 +182,8 @@ def stitch(board, edge, net="GND", pitch=1.25, spacing=2.0):
                     and all(((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5 > mm(spacing) for q in placed)
                     and all(((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5 > r + mm(VIA_DRILL / 2 + 0.35)
                             for q, r in holes)
-                    and clear(p, mm(VIA_D / 2 + GAP), obs)):
+                    and clear(p, mm(VIA_D / 2 + GAP), obs)
+                    and not blocked(board, p, mm(VIA_D / 2))):
                 v = add_via(board, p, net)
                 placed.append(p)
                 holes.append((p, mm(VIA_DRILL / 2)))
@@ -291,7 +308,14 @@ def plane_fanout(board, nets=("+3V3", "GND"), d=0.45, drill=0.2, skip=("U1",)):
                         continue
                     path_ok = all(clear(pcbnew.VECTOR2I(int(c.x + (v.x - c.x) * f), int(c.y + (v.y - c.y) * f)),
                                         mm(0.125 + 0.11), obs) for f in (0.5, 0.65, 0.8, 0.9))
+                    own = pad.GetBoundingBox()
+                    ox = max(own.GetLeft() - v.x, 0, v.x - own.GetRight())
+                    oy = max(own.GetTop() - v.y, 0, v.y - own.GetBottom())
+                    mid = pcbnew.VECTOR2I((c.x + v.x) // 2, (c.y + v.y) // 2)
                     if (path_ok and clear(v, mm(d / 2 + 0.12), obs)
+                            and (ox * ox + oy * oy) ** 0.5 >= mm(d / 2 + 0.05)   # not touching its own pad
+                            and not blocked(board, v, mm(d / 2))
+                            and not blocked(board, mid, mm(0.125), tracks_on=pcbnew.F_Cu)
                             and edge.PointInside(v) and edge.SquaredDistance(v, True) > mm(d / 2 + 0.35) ** 2
                             and all(((v.x - q.x) ** 2 + (v.y - q.y) ** 2) ** 0.5 > rr + mm(drill / 2 + 0.22)
                                     for q, rr in holes)):
@@ -370,7 +394,8 @@ def patch_fragments(board, net="GND", d=0.45, drill=0.2):
                     if (ol.PointInside(p) and ol.SquaredDistance(p, True) >= mm(d / 2) ** 2
                             and all(((p.x - q.x) ** 2 + (p.y - q.y) ** 2) ** 0.5 > r + mm(drill / 2 + 0.3)
                                     for q, r in holes)
-                            and clear(p, mm(d / 2 + 0.1), obs)):
+                            and clear(p, mm(d / 2 + 0.1), obs)
+                            and not blocked(board, p, mm(d / 2))):
                         v = pcbnew.PCB_VIA(board)
                         v.SetPosition(p)
                         v.SetWidth(mm(d))
@@ -428,6 +453,8 @@ def setup_netclasses(board):
 def route(board, edge):
     for layer, net in PLANES:
         add_zone(board, layer, net, edge)
+    from critical import keepouts
+    router_only = keepouts(board)
     preroute(board)
 
     # Round 1 routes everything; rounds 2-3 start from the previous result so
@@ -459,6 +486,8 @@ def route(board, edge):
         if t.GetClass() == "PCB_TRACK" and t.GetWidth() < mm(0.1):
             t.SetWidth(mm(0.1))
     drop_unused_vias(board)
+    for z in router_only:           # they cover hand-drawn tracks; DRC would flag them
+        board.Remove(z)
 
     for layer, net in POURS:
         add_zone(board, layer, net, edge, priority=0)

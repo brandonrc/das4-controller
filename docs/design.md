@@ -87,9 +87,9 @@ table ([`das4.py`](../hardware/circuit/das4.py) has the same thing).
 |---|---|
 | J4 pin *k* (key matrix) | GPIO(40 − *k*): pin 1 → GPIO39 … pin 26 → GPIO14. Follows the package pin order so the bus fans out without crossings; all on 5 V-tolerant GPIO0–39 |
 | SW1 / SW2 / SW3 / SW4 / SW5 (active low, use internal pull-ups) | GPIO45 / 46 / 47 / 43 / 42 |
-| Encoder A / B (internal pull-ups) | GPIO9 / GPIO10 |
+| Encoder A / B (internal pull-ups) | GPIO13 / GPIO8 |
 | RGB LED data (WS2812, chain NUM → CAPS → SCROLL; **inverted**) | GPIO44 |
-| Spare | GPIO0–8, GPIO11–13, GPIO40–41 |
+| Spare | GPIO0–7, GPIO9–12, GPIO40–41 |
 
 GPIO40–47 are the ADC pins and aren't 5 V tolerant, which is fine for the
 buttons and the LED driver (all 3.3 V). Mind RP2350 erratum E9 on those pins:
@@ -104,21 +104,31 @@ The MCU corner follows Raspberry Pi's minimal-design layout, drawn by hand in
 - the core regulator block right at pins 61–65: VREG_VIN and +1V1 caps
   against the pins, LX running out between their pads into L1, GND vias
   beside them, and the VREG_AVDD RC filter
-- a 3×3 via array in the exposed GND pad
+- 5 GND vias in the exposed pad, with the solder paste split into 4 windows
+  (~50 %) between them so no paste sits over a via
 - a via straight inward from every +3V3 pin (to the In2 plane) and every
   +1V1 pin (to a 0.5 mm +1V1 "C" on B.Cu around the chip, like RPi's)
-- 100 nF caps in columns beside the pins, with shared GND vias
+- 100 nF caps in columns beside the pins, with a shared GND via between each
+  pair; DVDD pin 10's cap right under the pin
 - the crystal right beside XIN/XOUT, with XOUT's series resistor in line and no
   vias or other signals near it
 - USB upstream D+/D− as a coupled pair from J1 to the hub over solid GND, kept
   more than 3 mm from the mounting hole; the CC pull-downs
 - each tact switch's internally-connected pad pairs joined
 
+Keep-outs (rule areas, from layout review 2):
+- no copper on In1, In2 or B.Cu under L1 and VREG_LX (RP2350 datasheet 6.3.8)
+- no top-layer pour round the regulator block, so its GND joins main GND at
+  one point (the CIN/COUT via pair)
+- no top-layer tracks or vias under the USB-A shells
+- nothing within 2.5 mm of the mounting holes (screw heads)
+- while autorouting only: nothing else through the crystal block
+
 Then Freerouting does the rest (`make route`,
 [route.py](../hardware/scripts/route.py)): 4 differently-configured runs in
 parallel, best kept. After autorouting: GND stitching vias wherever the outer
 pours filled, extra vias into any via-less pour piece, then fill.
-Result: 849 track segments, 467 vias; 0 unconnected, 0 non-cosmetic DRC violations.
+Result: 857 track segments, 440 vias; 0 unconnected, 0 non-cosmetic DRC violations (all 4 router variants).
 
 - **4 layers** (signal / GND / power / signal). The hub's upstream link runs
   at USB high speed (480 Mbit/s) and needs 90 Ω pairs over a solid ground

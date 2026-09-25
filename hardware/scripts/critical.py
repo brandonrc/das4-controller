@@ -73,11 +73,11 @@ def inward_via_pos(board, n):
 
 
 def mcu_core(board):
-    # 1. Exposed pad: 3x3 GND vias into In1 (review blocker 1)
+    # 1. Exposed pad: 5 GND vias into In1 in a "+", in the gaps between the
+    # 4 paste windows gen_board.py cuts (so paste never sits over a hole)
     ux, uy = xy(board.FindFootprintByReference("U1").GetPosition())
-    for ix in (-1, 0, 1):
-        for iy in (-1, 0, 1):
-            via(board, ux + ix, uy + iy, "GND")
+    for dx, dy in ((0, 0), (1.2, 0), (-1.2, 0), (0, 1.2), (0, -1.2)):
+        via(board, ux + dx, uy + dy, "GND")
 
     # 2. Power pins: short inward stub + via
     for n in V33_PINS + V11_PINS + INWARD_SIGNALS:
@@ -93,7 +93,9 @@ def mcu_core(board):
     c164_1, c164_2 = pp(board, "C164", 1), pp(board, "C164", 2)
     c165_1, c165_2 = pp(board, "C165", 1), pp(board, "C165", 2)
     l1_lx, l1_v11 = pp(board, "L1", 1), pp(board, "L1", 2)
-    path(board, [p63, (l1_lx[0], p63[1]), l1_lx], F, "VREG_LX", 0.15)
+    lx_x = c165_1[0] - 0.54                         # just left of C165's pads
+    path(board, [p63, (lx_x, p63[1])], F, "VREG_LX", 0.15)   # 0.4 mm gap between 0402 pads
+    path(board, [(lx_x, p63[1]), (lx_x, l1_lx[1]), l1_lx], F, "VREG_LX", 0.25)
     path(board, [p64, c164_1], F, "+3V3", 0.25)
     path(board, [p62, c164_2], F, "GND", 0.25)
     path(board, [c164_2, c165_2], F, "GND", 0.3)
@@ -104,7 +106,7 @@ def mcu_core(board):
     fb_y = c164_1[1] - 0.57                         # FB passes under C164's VIN pad
     path(board, [p65, (p65[0] - 0.45, p65[1]), (p65[0] - 0.45 - abs(p65[1] - fb_y), fb_y),
                  (c165_1[0], fb_y), c165_1], F, "+1V1", 0.2)
-    vl = (c165_1[0] - 0.64, c165_1[1] - 1.17)       # +1V1 spine via
+    vl = (c165_1[0] - 0.39, c165_1[1] - 0.62)       # +1V1 spine via, clear of the flash pads
     path(board, [c165_1, vl], F, "+1V1", 0.3)
     via(board, *vl, "+1V1")
     # VREG_AVDD: pin 61 -> C161 (4.7u) -> R161 (33R) -> +3V3 via
@@ -122,22 +124,27 @@ def mcu_core(board):
 
 def spine(board, vl):
     """+1V1 on B.Cu (like RPi's), a 'C' around the left of the chip so the
-    USB/SWD vias under it can still get out to the right."""
+    USB/SWD vias under it can still get out to the right. Both legs leave
+    V_left under U1's left pad row: clear of the L1/LX keep-out, and the
+    B.Cu gap to the QSPI flash stays free."""
     v10 = inward_via_pos(board, 10)
     v32 = inward_via_pos(board, 32)
     v51 = inward_via_pos(board, 51)
     top_y, bot_y = 26.6, 16.55
-    col = [pp(board, r, 1) for r in ("C151", "C132", "C110", "C166")]
+    col = [pp(board, r, 1) for r in ("C151", "C132", "C166")]
     col_x = col[0][0] - 0.55
-    # top: V_left -> up the left -> across the top -> V51 and the cap column
-    path(board, [vl, (3.2, vl[1] + 0.2), (3.2, top_y), (v51[0] - 1.2, top_y),
-                 (v51[0] - 1.2, v51[1]), v51], B, "+1V1", 0.5)
+    ux = pp(board, "U1", 61)[0] + 0.46      # under the pads, 0.14 mm off the inward vias
+    # top: V_left -> under the left pad row -> across the top -> V51 and the cap column
+    path(board, [vl, (ux, vl[1]), (ux, top_y)], B, "+1V1", 0.3)
+    path(board, [(ux, top_y), (v51[0] - 1.2, top_y), (v51[0] - 1.2, v51[1]), v51], B, "+1V1", 0.5)
     path(board, [(v51[0] - 1.2, top_y), (col_x, top_y), (col_x, col[-1][1])], B, "+1V1", 0.5)
     for c in col:
         path(board, [c, (col_x, c[1])], F, "+1V1", 0.3)
         via(board, col_x, c[1], "+1V1", 0.45, 0.2)
-    # bottom: V_left -> down the left -> under the chip bottom -> V10 -> V32
-    path(board, [vl, (5.5, vl[1] - 0.6), (5.5, bot_y), (v10[0], bot_y), v10], B, "+1V1", 0.5)
+    # bottom: down under the left pad row too (leaves the gap to the QSPI
+    # flash free on B.Cu) -> under the chip bottom -> V10 -> V32
+    path(board, [(ux, vl[1]), (ux, bot_y)], B, "+1V1", 0.3)
+    path(board, [(ux, bot_y), (v10[0], bot_y), v10], B, "+1V1", 0.5)
     path(board, [(v10[0], bot_y), (15.7, bot_y), (15.7, v32[1]), v32], B, "+1V1", 0.5)
 
 
@@ -161,14 +168,20 @@ def decaps(board):
         path(board, [c, (c[0] + 0.55, c[1])], F, "+3V3", 0.3)
         via(board, c[0] + 0.55, c[1], "+3V3", 0.45, 0.2)
     # GND: one via between each pair of stacked caps (their GND pads face the
-    # same way), plus one past the last
-    for column in (("C141", "C151", "C132", "C110", "C166", "C150", "C124", "C129", "C169", "C115"),
+    # same way; the 1.2 mm pitch leaves the via clear of both pads), plus one
+    # past the last
+    for column in (("C141", "C151", "C132", "C166", "C150", "C124", "C129", "C169", "C115"),
                    ("C160", "C159", "C176", "C168")):
         g = [pp(board, r, 2) for r in column]
         for a, b in zip(g, g[1:] + [None]):
-            vy = (a[1] + b[1]) / 2 if b else a[1] + 0.525
+            vy = (a[1] + b[1]) / 2 if b else a[1] + 0.6
             via(board, a[0], vy, "GND", 0.45, 0.2)
             path(board, [a, (a[0], vy)] + ([b] if b else []), F, "GND", 0.3)
+    # DVDD pin 10: its 100 nF right under the pin, GND straight into the
+    # encoder's GND pin (layout review 2: DVDD caps were 12-32 mm away)
+    a, c1, c2 = pp(board, "U1", 10), pp(board, "C110", 1), pp(board, "C110", 2)
+    path(board, [a, c1], F, "+1V1", 0.25)
+    path(board, [c2, (c2[0], pp(board, "ENC1", "C")[1])], F, "GND", 0.3)
     g = pp(board, "C105", 2)
     path(board, [g, (g[0] - 0.6, g[1])], F, "GND", 0.3)
     via(board, g[0] - 0.6, g[1], "GND", 0.45, 0.2)
@@ -190,8 +203,8 @@ def crystal(board):
     path(board, [r2, (r2[0], xo_y), (y3[0], xo_y), y3], F, "XOUT_XTAL", 0.2)
     path(board, [y3, c231_1], F, "XOUT_XTAL", 0.2)
     path(board, [y4, y2], F, "GND", 0.3)             # tie the GND pads under the can
-    path(board, [y2, (y2[0] + 0.9, y2[1])], F, "GND", 0.3)
-    via(board, y2[0] + 0.9, y2[1], "GND")
+    path(board, [y2, (y2[0] + 1.15, y2[1])], F, "GND", 0.3)
+    via(board, y2[0] + 1.15, y2[1], "GND")
     path(board, [c230_2, (c230_2[0], c230_2[1] - 0.6)], F, "GND", 0.3)
     via(board, c230_2[0], c230_2[1] - 0.6, "GND", 0.45, 0.2)
     path(board, [c231_2, (c231_2[0] + 0.6, c231_2[1])], F, "GND", 0.3)
@@ -248,10 +261,111 @@ def cc(board):
     via(board, r2g[0], r2g[1] - 0.7, "GND", 0.45, 0.2)
 
 
+def encoder(board):
+    """ENC_B (pin 6) down left of C110 and under C105 to pad B; ENC_A (pin
+    12) straight down into pad A. Both pass the encoder's GND pin C."""
+    b6, a12 = pp(board, "U1", 6), pp(board, "U1", 12)
+    eb, ea = pp(board, "ENC1", "B"), pp(board, "ENC1", "A")
+    y = 14.45
+    path(board, [b6, (b6[0], y), (eb[0], y), eb], F, "ENC_B", 0.2)
+    path(board, [a12, (a12[0], 14.6), ea], F, "ENC_A", 0.2)
+
+
+def leds(board):
+    """Lock-LED 5 V: a 0.5 mm spine up the cap column (C37 -> C36 -> R10)
+    with a tee over each LED's pad row into its +5V pin (the autorouter kept
+    failing to thread the 0.5 mm +5V class in here)."""
+    c37, c36, r10 = pp(board, "C37", 1), pp(board, "C36", 1), pp(board, "R10", 1)
+    path(board, [c37, c36, (c36[0], r10[1] - 0.03), r10], F, "+5V", 0.5)
+    for cap, led in (("C37", "D3"), ("C36", "D2")):
+        c, d = pp(board, cap, 1), pp(board, led, 2)
+        ty = c[1] + 1.0                    # clear of the cap's GND pad
+        path(board, [(c[0], ty), (d[0] - 0.53, ty), (d[0], ty - 0.53), d], F, "+5V", 0.5)
+
+
+def rect(x0, y0, x1, y1):
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+def box(board, ref, grow=0.0):
+    bb = board.FindFootprintByReference(ref).GetCourtyard(F).BBox()
+    x0, y1 = xy(bb.GetOrigin())
+    x1, y0 = xy(bb.GetEnd())
+    return x0 - grow, y0 - grow, x1 + grow, y1 + grow
+
+
+def rule_area(board, pts, layers, tracks=True, vias=True, pour=True, name=""):
+    z = pcbnew.ZONE(board)
+    z.SetIsRuleArea(True)
+    z.SetDoNotAllowTracks(tracks)
+    z.SetDoNotAllowVias(vias)
+    z.SetDoNotAllowZoneFills(pour)
+    z.SetDoNotAllowPads(False)
+    z.SetDoNotAllowFootprints(False)
+    ls = pcbnew.LSET()
+    for layer in layers:
+        ls.AddLayer(layer)
+    z.SetLayerSet(ls)
+    z.SetZoneName(name)
+    ol = z.Outline()
+    ol.NewOutline()
+    for x, y in pts:
+        v = P(x, y)
+        ol.Append(v.x, v.y)
+    board.Add(z)
+    return z
+
+
+def keepouts(board):
+    """Keep-out rule areas. Returns the router-only ones: route.py removes
+    them again after autorouting (they cover hand-drawn tracks, which DRC
+    would otherwise flag)."""
+    import math
+    I1, I2 = pcbnew.In1_Cu, pcbnew.In2_Cu
+    # 1. no copper at all under L1 and VREG_LX on the inner layers and
+    # B.Cu (RP2350 datasheet 6.3.8: "cut away any copper immediately
+    # underneath L/VREG_LX")
+    x0, y0, x1, y1 = box(board, "L1", 0.1)
+    p63 = pp(board, "U1", 63)
+    lx_x = pp(board, "C165", 1)[0] - 0.54
+    rule_area(board, [(x0, y0), (x1, y0), (x1, p63[1] - 0.25), (p63[0], p63[1] - 0.25),
+                      (p63[0], p63[1] + 0.25), (lx_x + 0.17, p63[1] + 0.25), (lx_x + 0.17, y1), (x0, y1)],
+              (I1, I2, B), name="no copper under L1/LX")
+    # 2. no top pour round the regulator block: CIN/COUT GND reach main GND
+    # only through their via pair (datasheet: "connect to main GND at one point")
+    rule_area(board, [(1.3, 22.4), (5.6, 22.4), (5.6, 24.85), (lx_x + 0.17, 24.85),
+                      (lx_x + 0.17, 25.7), (1.3, 25.7)], (F,), tracks=False, vias=False,
+              name="regulator GND single point")
+    # 3. nothing but GND under the USB-A shells (one scuff would short VBUS
+    # or a matrix line to the grounded shell)
+    for ref in ("J2", "J3"):
+        _, y0, _, y1 = box(board, ref)
+        x0 = pp(board, ref, 1)[0] + 0.55
+        rule_area(board, rect(x0, y0, 45.0, y1), (F,), pour=False, name=f"{ref} shell")
+    # 4. nothing under the M2.5 screw heads (4.5 mm pan head + 0.25 mm)
+    for ref in ("H1", "H2", "H3"):
+        cx, cy = xy(board.FindFootprintByReference(ref).GetPosition())
+        rule_area(board, [(cx + 2.5 * math.cos(k * math.pi / 12), cy + 2.5 * math.sin(k * math.pi / 12))
+                          for k in range(24)], (F, B), pour=False, name=f"{ref} screw head")
+    # router only: no other tracks or vias through the crystal block (review 2:
+    # a matrix line ran between the load caps' pads, vias beside XIN/XOUT)
+    router = []
+    for ref in ("Y1", "C230", "C231", "R231"):
+        x0, y0, x1, y1 = box(board, ref, 0.2)
+        router.append(rule_area(board, rect(max(x0, 16.3), y0, x1, y1), (F,), pour=False))
+    xo = pp(board, "R231", 2)
+    router.append(rule_area(board, rect(16.3, 20.45, 18.3, 21.0), (F,), pour=False))   # XIN
+    router.append(rule_area(board, rect(xo[0] - 0.4, 22.0, pp(board, "Y1", 3)[0] + 0.25, 22.95),
+                            (F,), pour=False))                                       # XOUT
+    return router
+
+
 def critical(board):
     vl = mcu_core(board)
     spine(board, vl)
     decaps(board)
     crystal(board)
+    encoder(board)
+    leds(board)
     usb_up(board)
     cc(board)

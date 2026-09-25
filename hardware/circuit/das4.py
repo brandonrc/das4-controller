@@ -46,9 +46,10 @@ J4_GPIO = [40 - k for k in range(1, 27)]
 # 5 V-tolerant pins. With U1 rotated 90 degrees on the board they face up,
 # towards the buttons.
 BUTTON_GPIO = [45, 46, 47, 43, 42]     # SW1..SW5
-ENC_A_GPIO, ENC_B_GPIO = 9, 10
+# encoder either side of DVDD pin 10's cap, straight down to its pins
+ENC_A_GPIO, ENC_B_GPIO = 13, 8
 LED_DATA_GPIO = 44                     # WS2812 chain: NUM -> CAPS -> SCROLL
-# spare: GPIO0-8, GPIO11-13, GPIO40-41
+# spare: GPIO0-7, GPIO9-12, GPIO40-41
 
 # ---------------------------------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"

@@ -101,12 +101,13 @@ GROUPS = {
     "C230": (18.8, 18.3, 270), "C231": (22.5, 21.65, 0),
     # decoupling: supply pads face the MCU, each cap gets its own vias to the
     # 3V3 plane (In2) / +1V1 spine (B.Cu) and GND (In1) in route.py
-    **{ref: (15.9, 26.9 + 1.05 * i, 0) for i, ref in enumerate(
+    **{ref: (15.9, 26.9 + 1.2 * i, 0) for i, ref in enumerate(
         # +1V1 caps nearest the chip: their B.Cu riser then stays clear of
         # the +3V3 caps' vias above
-        ("C141", "C151", "C132", "C110", "C166", "C150", "C124", "C129", "C169", "C115"))},
-    **{ref: (6.3, 27.3 + 1.05 * i, 180) for i, ref in enumerate(("C160", "C159", "C176", "C168"))},
+        ("C141", "C151", "C132", "C166", "C150", "C124", "C129", "C169", "C115"))},
+    **{ref: (6.3, 27.3 + 1.2 * i, 180) for i, ref in enumerate(("C160", "C159", "C176", "C168"))},
     "C105": (6.2, 15.0, 180),
+    "C110": (10.32, 15.0, 180),               # DVDD pin 10, pad 1 right under the pin
     # USB series resistors at the hub end (full speed: placement not critical)
     "R266": (34.4, 28.5, 0), "R267": (34.4, 29.7, 0),
     "TP1": (7.8, 39.0, 0), "TP2": (10.5, 39.0, 0), "TP3": (13.2, 39.0, 0), "TP4": (15.9, 39.0, 0),
@@ -248,6 +249,28 @@ def dim(board, a, b, offset, layer=pcbnew.Dwgs_User):
     board.Add(d)
 
 
+def ep_windowpane(fp, num="81", win=1.2, off=1.0):
+    """Paste for the RP2350B's exposed pad as 4 windows (~50 % coverage)
+    between the 5 GND vias critical.py puts in it: full-pad paste over open
+    vias voids and can float a 0.4 mm-pitch QFN (layout review 2)."""
+    ep = next(p for p in fp.Pads() if p.GetNumber() == num)
+    ls = ep.GetLayerSet()
+    ls.RemoveLayer(pcbnew.F_Paste)
+    ep.SetLayerSet(ls)
+    c = ep.GetPosition()
+    paste = pcbnew.LSET()
+    paste.AddLayer(pcbnew.F_Paste)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            a = pcbnew.PAD(fp)
+            a.SetAttribute(pcbnew.PAD_ATTRIB_SMD)
+            a.SetShape(pcbnew.PAD_SHAPE_RECT)
+            a.SetSize(pcbnew.VECTOR2I(pcbnew.FromMM(win), pcbnew.FromMM(win)))
+            a.SetLayerSet(paste)
+            fp.Add(a)
+            a.SetPosition(pcbnew.VECTOR2I(c.x + sx * pcbnew.FromMM(off), c.y + sy * pcbnew.FromMM(off)))
+
+
 def main():
     board = pcbnew.CreateEmptyBoard()
     ds = board.GetDesignSettings()
@@ -331,6 +354,8 @@ def main():
                 rot = 0 if pads["5"].y < pads["1"].y else 180
             fp.SetOrientationDegrees(rot)
             move_to(fp, "pads" if ref.startswith(("U", "Y", "L")) else "center", x, y)
+            if ref == "U1":
+                ep_windowpane(fp)
         else:
             # not placed yet: park it right of the board so it's easy to spot
             move_to(fp, "center", 60 + 6 * (staging % 5), 80 - 6 * (staging // 5))
