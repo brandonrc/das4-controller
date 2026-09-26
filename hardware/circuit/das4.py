@@ -296,8 +296,9 @@ gnd += enc["C"], enc["D"], enc["E"]
 # One GPIO drives the chain NUM -> CAPS -> SCROLL. WS2812s want data above
 # 0.7 x VDD = 3.5 V at 5 V, more than a 3.3 V GPIO gives. Level shift with a
 # JLCPCB-Basic 2N7002 (open drain) and a 1k pull-up to 5 V. This INVERTS the
-# signal: firmware must drive the data line inverted (QMK: WS2812_EXTERNAL_PULLUP,
-# or invert the pin in the PIO program).
+# signal: firmware inverts the GPIO44 pad output (gpio_set_outover(...,
+# GPIO_OVERRIDE_INVERT) in pico-sdk). Not QMK's WS2812_EXTERNAL_PULLUP: that's
+# open-drain and non-inverting.
 q = jlc("2N7002", "Q1", "C8545")
 din = Net("LED_DIN1")
 Net("LED_DATA_N").connect(q["G"], gpio(LED_DATA_GPIO))

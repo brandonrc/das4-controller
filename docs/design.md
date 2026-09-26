@@ -73,7 +73,7 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 | USB-A ×2 | SHOU HAN AF 90 WJDG (**hand-soldered**) | USB 2.0, right angle, through-hole. VBUS straight from the PC's 5 V (its port limits current); 22 µF + 100 nF per port |
 | Encoder | Alps EC12E24204A2 (**hand-soldered**) | 12 mm, no switch, 24 detents, 15 mm D-shaft. A push switch can't fit: the body sits flush with the board edge, so switch pins would land off the board |
 | Buttons ×5 | 6 × 6 × 5 mm SMD tact (**hand-soldered**) | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
-| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through a 2N7002 + 1 kΩ pull-up to 5 V (Basic parts): a 5 V-level signal, **inverted**, so firmware drives the pin inverted (QMK: `WS2812_EXTERNAL_PULLUP`). 100 nF per LED |
+| Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through a 2N7002 + 1 kΩ pull-up to 5 V (Basic parts): a 5 V-level signal, **inverted**, so firmware inverts the GPIO44 pad output (one register setting; see [firmware-check-2026-09-26.md](firmware-check-2026-09-26.md)). 100 nF per LED |
 | BOOTSEL / RESET | TS-1187A 5 × 5 mm SMD tact (JLCPCB Basic) | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
 | SWD + rails | 7 test pads | SWCLK, SWDIO, GND, 3V3, RUN, plus +1V1 and +5V for bring-up |
 | J4 | 26 solder pads, 1.0 mm pitch, 0.6 × 2.5 mm, bottom side at the board edge | The key PCB's flex cable is hot-bar soldered at both ends (no connector), so it's soldered straight onto these by hand, like the original. No part, no cost |
@@ -144,9 +144,19 @@ Result: 859 track segments, 452 vias; 0 unconnected, 0 non-cosmetic DRC violatio
 
 ## Firmware
 
-QMK (RP2040/RP2350 support, encoder, lock LEDs, VIA/Vial remapping), or
-KMK/CircuitPython for easy hacking. The buttons are plain GPIO, so any
-firmware can give them "fun" functions.
+Checked 2026-09-26 ([firmware-check-2026-09-26.md](firmware-check-2026-09-26.md)):
+- **pico-sdk + TinyUSB**: supports everything today. A bring-up firmware for
+  this exact pinout builds to a .uf2: [firmware/bringup](../firmware/bringup).
+- **KMK / CircuitPython**: works with a small custom board definition and an
+  rp2pio-based inverted WS2812 driver. Good for easy hacking.
+- **QMK**: no RP2350 support yet (ChibiOS pending; the one proof-of-concept
+  fork can't use GPIO above 31, and this board needs up to GPIO47). Nothing
+  on the PCB blocks it once support lands.
+
+Flashing: hold BOOTSEL and reset, and the board shows up as a USB drive
+(works fine behind the hub). SWD pads as a fallback. Matrix scanning drives
+low and reads with pull-ups (never internal pull-downs: RP2350 erratum E9).
+The buttons are plain GPIO, so any firmware can give them "fun" functions.
 
 ## Ordering at JLCPCB
 
