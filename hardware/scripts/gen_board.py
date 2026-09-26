@@ -104,10 +104,11 @@ GROUPS = {
     **{ref: (15.9, 26.9 + 1.2 * i, 0) for i, ref in enumerate(
         # +1V1 caps nearest the chip: their B.Cu riser then stays clear of
         # the +3V3 caps' vias above
-        ("C141", "C151", "C132", "C166", "C150", "C124", "C129", "C169", "C115"))},
+        ("C141", "C132", "C166", "C150", "C124", "C129", "C169", "C115"))},
     **{ref: (6.3, 27.3 + 1.2 * i, 180) for i, ref in enumerate(("C160", "C159", "C176", "C168"))},
     "C105": (6.2, 15.0, 180),
     "C110": (10.32, 15.0, 180),               # DVDD pin 10, pad 1 right under the pin
+    "C151": (10.8, 27.2, 90),                 # DVDD pin 51, pad 1 right above the pin (RPi guide check)
     # USB series resistors at the hub end (full speed: placement not critical)
     "R266": (34.4, 28.5, 0), "R267": (34.4, 29.7, 0),
     "TP1": (7.8, 39.0, 0), "TP2": (10.5, 39.0, 0), "TP3": (13.2, 39.0, 0), "TP4": (15.9, 39.0, 0),

@@ -128,7 +128,7 @@ Then Freerouting does the rest (`make route`,
 [route.py](../hardware/scripts/route.py)): 4 differently-configured runs in
 parallel, best kept. After autorouting: GND stitching vias wherever the outer
 pours filled, extra vias into any via-less pour piece, then fill.
-Result: 794 track segments, 444 vias; 0 unconnected, 0 non-cosmetic DRC violations.
+Result: 859 track segments, 452 vias; 0 unconnected, 0 non-cosmetic DRC violations.
 
 - **4 layers** (signal / GND / power / signal). The hub's upstream link runs
   at USB high speed (480 Mbit/s) and needs 90 Ω pairs over a solid ground
@@ -147,6 +147,23 @@ Result: 794 track segments, 444 vias; 0 unconnected, 0 non-cosmetic DRC violatio
 QMK (RP2040/RP2350 support, encoder, lock LEDs, VIA/Vial remapping), or
 KMK/CircuitPython for easy hacking. The buttons are plain GPIO, so any
 firmware can give them "fun" functions.
+
+## Ordering at JLCPCB
+
+Files: `make fab` writes `build/jlcpcb/`.
+1. Upload `das4-controller-gerbers.zip`. Choose 4 layers, 1.6 mm, and the
+   **JLC04161H-7628** stackup with impedance control (the ~90 Ω USB pair
+   widths assume it). Vias go down to 0.2 mm drill; pick the matching
+   "min via hole" option if the form asks.
+2. Turn on PCB Assembly, top side only. Upload `bom.csv` and `cpl.csv`.
+3. In the placement preview, check the rotations of U1, U2, J1, L1, Q1, U4,
+   Y1 and Y2. **L1's white polarity dot must sit on the +1V1 pad, the end
+   next to C165** (Raspberry Pi's layout; the "wrong way round" inductor
+   upsets the core regulator). JLC's library model has the dot on pad 2,
+   which is +1V1 here, so it should already be right.
+4. Hand-solder parts (not in JLC's BOM): 2 × USB-A, the encoder, 3 × WS2812D
+   LEDs, 5 × 6 mm tact switches. See [bom.md](bom.md). The J4 flex is
+   soldered onto its pads by hand.
 
 ## Open questions
 

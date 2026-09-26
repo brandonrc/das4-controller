@@ -56,8 +56,10 @@ def main():
             continue
         ref, lcsc = fp.GetReference(), fp.GetFieldText("LCSC")
         fpname = fp.GetFPID().GetLibItemName().wx_str()
-        g = groups.setdefault(lcsc, {"value": fp.GetValue(), "fp": fpname, "refs": []})
+        g = groups.setdefault(lcsc, {"values": [], "fp": fpname, "refs": []})
         g["refs"].append(ref)
+        if fp.GetValue() not in g["values"]:        # e.g. SW6 BOOTSEL + SW7 RESET, same part
+            g["values"].append(fp.GetValue())
         pos = fp.GetPosition()
         rot = (fp.GetOrientationDegrees() + ROT_FIX.get(fpname, 0)) % 360
         cpl.append([ref, f"{pcbnew.ToMM(pos.x - origin.x):.4f}mm", f"{pcbnew.ToMM(origin.y - pos.y):.4f}mm",
@@ -67,7 +69,7 @@ def main():
         w = csv.writer(f)
         w.writerow(["Comment", "Designator", "Footprint", "LCSC Part #"])
         for lcsc, g in sorted(groups.items(), key=lambda kv: kv[1]["refs"][0]):
-            w.writerow([g["value"], ",".join(sorted(g["refs"])), g["fp"], lcsc])
+            w.writerow(["/".join(g["values"]), ",".join(sorted(g["refs"])), g["fp"], lcsc])
     with open(os.path.join(OUT, "cpl.csv"), "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])

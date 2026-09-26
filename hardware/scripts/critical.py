@@ -131,7 +131,7 @@ def spine(board, vl):
     v32 = inward_via_pos(board, 32)
     v51 = inward_via_pos(board, 51)
     top_y, bot_y = 26.6, 16.55
-    col = [pp(board, r, 1) for r in ("C151", "C132", "C166")]
+    col = [pp(board, r, 1) for r in ("C132", "C166")]
     col_x = col[0][0] - 0.55
     ux = pp(board, "U1", 61)[0] + 0.46      # under the pads, 0.14 mm off the inward vias
     # top: V_left -> under the left pad row -> across the top -> V51 and the cap column
@@ -170,13 +170,18 @@ def decaps(board):
     # GND: one via between each pair of stacked caps (their GND pads face the
     # same way; the 1.2 mm pitch leaves the via clear of both pads), plus one
     # past the last
-    for column in (("C141", "C151", "C132", "C166", "C150", "C124", "C129", "C169", "C115"),
+    for column in (("C141", "C132", "C166", "C150", "C124", "C129", "C169", "C115"),
                    ("C160", "C159", "C176", "C168")):
         g = [pp(board, r, 2) for r in column]
         for a, b in zip(g, g[1:] + [None]):
             vy = (a[1] + b[1]) / 2 if b else a[1] + 0.6
             via(board, a[0], vy, "GND", 0.45, 0.2)
             path(board, [a, (a[0], vy)] + ([b] if b else []), F, "GND", 0.3)
+    # DVDD pin 51: its 100 nF right above the pin, GND via just past it
+    a, c1, c2 = pp(board, "U1", 51), pp(board, "C151", 1), pp(board, "C151", 2)
+    path(board, [a, c1], F, "+1V1", 0.2)
+    path(board, [c2, (c2[0], c2[1] + 0.65)], F, "GND", 0.3)
+    via(board, c2[0], c2[1] + 0.65, "GND", 0.45, 0.2)
     # DVDD pin 10: its 100 nF right under the pin, GND straight into the
     # encoder's GND pin (layout review 2: DVDD caps were 12-32 mm away)
     a, c1, c2 = pp(board, "U1", 10), pp(board, "C110", 1), pp(board, "C110", 2)
