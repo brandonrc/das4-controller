@@ -371,6 +371,38 @@ def drop_unused_vias(board, keep_nets=("GND", "+3V3")):
     print(f"cleanup: {removed} unused signal vias removed")
 
 
+def trim_dangling(board, keep_nets=("GND", "+3V3")):
+    """Remove signal-track ends that touch nothing (left behind when a via
+    they led to was dropped). A dead end connects nothing, so it's safe;
+    repeat until none are left. (Reads the item lists once: GetTracks()
+    breaks after a Remove on a reloaded board in KiCad 10.0.5.)"""
+    tracks = [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK"]
+    vias = [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA"]
+    pads = [p for fp in board.GetFootprints() for p in fp.Pads()]
+
+    def touches(q, t):
+        net, layer, w = t.GetNetname(), t.GetLayer(), t.GetWidth() / 2
+        if any(p.GetNetname() == net and p.IsOnLayer(layer) and p.HitTest(q) for p in pads):
+            return True
+        if any(v.GetNetname() == net and ((v.GetPosition().x - q.x) ** 2 + (v.GetPosition().y - q.y) ** 2) ** 0.5
+               <= v.GetWidth(pcbnew.F_Cu) / 2 for v in vias):
+            return True
+        return any(o is not t and o.GetNetname() == net and o.GetLayer() == layer
+                   and seg_dist(q, o.GetStart(), o.GetEnd()) <= o.GetWidth() / 2 + w for o in tracks)
+
+    total = 0
+    while True:
+        dead = [t for t in tracks if t.GetNetname() not in keep_nets
+                and not (touches(t.GetStart(), t) and touches(t.GetEnd(), t))]
+        if not dead:
+            break
+        for t in dead:
+            tracks.remove(t)
+            board.Remove(t)
+        total += len(dead)
+    print(f"cleanup: {total} dangling track pieces trimmed")
+
+
 def preroute(board):
     from critical import critical     # hand layout of the critical nets
     critical(board)
@@ -500,6 +532,7 @@ def route(board, edge):
         if t.GetClass() == "PCB_TRACK" and t.GetWidth() < mm(0.1):
             t.SetWidth(mm(0.1))
     drop_unused_vias(board)
+    trim_dangling(board)
     for z in router_only:           # they cover hand-drawn tracks; DRC would flag them
         board.Remove(z)
 

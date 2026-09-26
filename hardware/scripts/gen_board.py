@@ -112,8 +112,9 @@ GROUPS = {
     # USB series resistors at the hub end (full speed: placement not critical)
     "R266": (34.4, 28.5, 0), "R267": (34.4, 29.7, 0),
     "TP1": (7.8, 39.0, 0), "TP2": (10.5, 39.0, 0), "TP3": (13.2, 39.0, 0), "TP4": (15.9, 39.0, 0),
-    "TP5": (7.8, 41.5, 0),                    # RUN, next to the SWD pads
-    "TP6": (10.5, 41.5, 0), "TP7": (13.2, 41.5, 0),   # +1V1, +5V (bring-up checks)
+    "TP5": (7.8, 42.0, 0),                    # RUN, next to the SWD pads
+    "TP6": (10.5, 42.0, 0), "TP7": (13.2, 42.0, 0),   # +1V1, +5V (bring-up checks)
+    "TP8": (-6.3, 12.6, 0), "TP9": (-3.6, 12.6, 0), "TP10": (-6.3, 15.3, 0),  # UART0 TX/RX/GND, left tab
     "SW6": (31.0, 40.0, 0),                   # BOOTSEL (clear of the USB_UP pair)
     "SW7": (26.8, 8.0, 0), "R303": (22.4, 8.0, 90),         # RESET
     # Hub block, next to the USB-A ports; C7/C6 right at VDD33/V5 (pins 13/12)
@@ -364,6 +365,40 @@ def main():
             staging += 1
     if staging:
         print(f"note: {staging} parts not in MECH/GROUPS, parked right of the board")
+
+    # Silkscreen: reference labels only where a person needs them (SW1-SW5,
+    # which firmware maps, and J4); everything else keeps its reference on
+    # F.Fab, so nothing prints on top of neighbouring parts. Test pads and the
+    # two small buttons get function labels instead; the LEDs have NUM/CAPS/
+    # SCROLL.
+    FUNC = {"TP1": "SWC", "TP2": "SWD", "TP3": "GND", "TP4": "3V3", "TP5": "RUN",
+            "TP6": "1V1", "TP7": "5V", "TP8": "TX", "TP9": "RX", "TP10": "GND",
+            "SW6": "BOOT", "SW7": "RST"}
+    for fp in board.GetFootprints():
+        ref = fp.GetReference()
+        if ref in FUNC:
+            fp.Reference().SetVisible(False)
+            x, y = pcbnew.ToMM(fp.GetPosition().x) - OX, OY - pcbnew.ToMM(fp.GetPosition().y)
+            dx, dy = 0.0, -1.4                        # test pads: label below
+            if ref in ("TP8", "TP9", "TP10"):         # tab pads: above (board edge below)
+                dy = 1.4
+            elif ref == "SW6":                        # small buttons: beside them
+                dx, dy = -4.7, 0.0
+            elif ref == "SW7":
+                dx, dy = 0.0, 3.5
+            if ref.startswith("TP"):                  # the label replaces the pad's silk ring
+                for g in [g for g in fp.GraphicalItems() if g.GetLayer() == pcbnew.F_SilkS]:
+                    fp.Remove(g)
+            t = pcbnew.PCB_TEXT(board)
+            t.SetText(FUNC[ref])
+            t.SetLayer(pcbnew.F_SilkS)
+            t.SetPosition(pt(x + dx, y + dy))
+            t.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(0.8), pcbnew.FromMM(0.8)))
+            t.SetTextThickness(pcbnew.FromMM(0.15))
+            board.Add(t)
+        elif ref not in ("SW1", "SW2", "SW3", "SW4", "SW5", "J4") and not ref.startswith("H") \
+                and fp.GetLayer() == pcbnew.F_Cu:
+            fp.Reference().SetLayer(pcbnew.F_Fab)
 
     # Front silkscreen labels for the lock LEDs
     for ref, label in (("D1", "NUM"), ("D2", "CAPS"), ("D3", "SCROLL")):

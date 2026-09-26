@@ -22,6 +22,12 @@ cmake -S firmware/bringup -B build/fw -G Ninja
 ninja -C build/fw          # -> build/fw/das4fw.uf2
 ```
 
+## Serial console
+
+Test pads TX (GPIO0), RX (GPIO1) and GND on the left tab are UART0, pico-sdk's
+default stdio UART (115200 8N1). A 3.3 V USB-serial adapter there shows
+`printf` output even when USB doesn't enumerate.
+
 ## Flash
 
 Hold BOOTSEL, tap RESET (or plug in): the board shows up as a USB drive.

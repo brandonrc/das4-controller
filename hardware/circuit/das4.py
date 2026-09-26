@@ -49,7 +49,7 @@ BUTTON_GPIO = [45, 46, 47, 43, 42]     # SW1..SW5
 # encoder either side of DVDD pin 10's cap, straight down to its pins
 ENC_A_GPIO, ENC_B_GPIO = 13, 8
 LED_DATA_GPIO = 44                     # WS2812 chain: NUM -> CAPS -> SCROLL
-# spare: GPIO0-7, GPIO9-12, GPIO40-41
+# UART0 debug pads: GPIO0 (TX), GPIO1 (RX). Spare: GPIO2-7, GPIO9-12, GPIO40-41
 
 # ---------------------------------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"
@@ -267,6 +267,13 @@ def gpio(n):
         if p.name == f"GPIO{n}" or p.name.startswith(f"GPIO{n}_"):
             return p
     raise KeyError(f"GPIO{n}")
+
+
+# UART0 debug pads (GPIO0 TX, GPIO1 RX, plus GND) on the left tab: a serial
+# console for bring-up that works even when USB doesn't enumerate
+for ref, sig in (("TP8", gpio(0)), ("TP9", gpio(1)), ("TP10", gnd)):
+    tp = Part("Connector", "TestPoint", ref=ref, footprint="TestPoint:TestPoint_Pad_D1.5mm")
+    tp[1] += sig
 
 
 # --- Key matrix connector J4 --------------------------------------------------

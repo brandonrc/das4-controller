@@ -75,7 +75,7 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 | Buttons ×5 | 6 × 6 × 5 mm SMD tact (**hand-soldered**) | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
 | Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through a 2N7002 + 1 kΩ pull-up to 5 V (Basic parts): a 5 V-level signal, **inverted**, so firmware inverts the GPIO44 pad output (one register setting; see [firmware-check-2026-09-26.md](firmware-check-2026-09-26.md)). 100 nF per LED |
 | BOOTSEL / RESET | TS-1187A 5 × 5 mm SMD tact (JLCPCB Basic) | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
-| SWD + rails | 7 test pads | SWCLK, SWDIO, GND, 3V3, RUN, plus +1V1 and +5V for bring-up |
+| Test pads | 10, labelled | SWD (SWC, SWD, GND, 3V3, RUN), rails (1V1, 5V), and a UART0 debug console on the left tab (TX = GPIO0, RX = GPIO1, GND) |
 | J4 | 26 solder pads, 1.0 mm pitch, 0.6 × 2.5 mm, bottom side at the board edge | The key PCB's flex cable is hot-bar soldered at both ends (no connector), so it's soldered straight onto these by hand, like the original. No part, no cost |
 
 ### GPIO map
@@ -89,7 +89,8 @@ table ([`das4.py`](../hardware/circuit/das4.py) has the same thing).
 | SW1 / SW2 / SW3 / SW4 / SW5 (active low, use internal pull-ups) | GPIO45 / 46 / 47 / 43 / 42 |
 | Encoder A / B (internal pull-ups) | GPIO13 / GPIO8 |
 | RGB LED data (WS2812, chain NUM → CAPS → SCROLL; **inverted**) | GPIO44 |
-| Spare | GPIO0–7, GPIO9–12, GPIO40–41 |
+| UART0 debug console (test pads on the left tab) | GPIO0 TX / GPIO1 RX |
+| Spare | GPIO2–7, GPIO9–12, GPIO40–41 |
 
 GPIO40–47 are the ADC pins and aren't 5 V tolerant, which is fine for the
 buttons and the LED driver (all 3.3 V). Mind RP2350 erratum E9 on those pins:
@@ -128,7 +129,7 @@ Then Freerouting does the rest (`make route`,
 [route.py](../hardware/scripts/route.py)): 4 differently-configured runs in
 parallel, best kept. After autorouting: GND stitching vias wherever the outer
 pours filled, extra vias into any via-less pour piece, then fill.
-Result: 859 track segments, 452 vias; 0 unconnected, 0 non-cosmetic DRC violations.
+Result: 921 track segments, 457 vias; 0 unconnected, 0 non-cosmetic DRC violations.
 
 - **4 layers** (signal / GND / power / signal). The hub's upstream link runs
   at USB high speed (480 Mbit/s) and needs 90 Ω pairs over a solid ground
