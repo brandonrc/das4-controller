@@ -255,8 +255,9 @@ R("22", mcu_dp, mcu["USB_DP"], ref="R267")
 R("22", mcu_dm, mcu["USB_DM"], ref="R266")
 
 # SWD debug pads (not assembled: bare copper)
+# plus +1V1 and +5V for checking the rails at bring-up
 for ref, sig in (("TP1", mcu["SWCLK"]), ("TP2", mcu["SWDIO"]), ("TP3", gnd), ("TP4", v33),
-                 ("TP5", run)):
+                 ("TP5", run), ("TP6", v11), ("TP7", vbus)):
     tp = Part("Connector", "TestPoint", ref=ref, footprint="TestPoint:TestPoint_Pad_D1.5mm")
     tp[1] += sig
 
@@ -269,11 +270,12 @@ def gpio(n):
 
 
 # --- Key matrix connector J4 --------------------------------------------------
-# 26 lines straight to GPIO; firmware decides rows vs columns. Pitch/type are
-# still unknown (placeholder footprint), and it's hand-fitted: no LCSC part.
-# Before plugging in, check that no J4 pin carries 5 V (see docs/design.md).
-j4 = Part("Connector_Generic", "Conn_01x26", ref="J4", value="Key matrix",
-          footprint="Connector_PinSocket_1.00mm:PinSocket_1x26_P1.00mm_Vertical")
+# 26 lines straight to GPIO; firmware decides rows vs columns. There's no
+# connector: the key PCB's 26-way 1.0 mm flex cable ("CON2") is soldered
+# straight onto pads, as on the original (hand-soldered, no LCSC part).
+# The key PCB is passive (keys only, no lights), so nothing drives these lines.
+j4 = Part("Connector_Generic", "Conn_01x26", ref="J4", value="Key matrix flex",
+          footprint="das4:FPC_Solder_1x26_P1.00mm")
 for i, g in enumerate(J4_GPIO, start=1):
     Net(f"KM{i}").connect(j4[i], gpio(g))
 

@@ -202,6 +202,7 @@ def track(board, a, b, layer, net, w):
     t.SetNet(board.FindNet(net))
     t.SetLocked(True)
     board.Add(t)
+    return t
 
 
 def pad_pos(board, ref, num):
@@ -350,12 +351,23 @@ def drop_unused_vias(board, keep_nets=("GND", "+3V3")):
               and seg_dist(p, t.GetStart(), t.GetEnd()) <= r + t.GetWidth() / 2]
         if len({t.GetLayer() for t in at}) >= 2:
             continue
+        # join the track ends that met on the via with short links inside its
+        # disc (copper already, so no new clearance problems)
+        tips = [(q, t) for t in at for q in (t.GetStart(), t.GetEnd())
+                if ((q.x - p.x) ** 2 + (q.y - p.y) ** 2) ** 0.5 <= r]
+        for q, t in tips[1:]:
+            if q != tips[0][0]:
+                link = track(board, tips[0][0], q, t.GetLayer(), v.GetNetname(),
+                             pcbnew.ToMM(min(t.GetWidth(), tips[0][1].GetWidth())))
+                link.SetLocked(False)
         board.Remove(v)
         ends = lambda t: min(((q.x - p.x) ** 2 + (q.y - p.y) ** 2) ** 0.5
                              for q in (t.GetStart(), t.GetEnd())) <= r
         if len(at) == 1 and ends(at[0]):    # a stub that only led to the via
             board.Remove(at[0])
         removed += 1
+    for t in [t for t in board.GetTracks() if t.GetClass() == "PCB_TRACK" and t.GetStart() == t.GetEnd()]:
+        board.Remove(t)
     print(f"cleanup: {removed} unused signal vias removed")
 
 
@@ -456,6 +468,8 @@ def route(board, edge):
     from critical import keepouts
     router_only = keepouts(board)
     preroute(board)
+    from critical import pair_via_band
+    router_only += pair_via_band(board)
 
     # Round 1 routes everything; rounds 2-3 start from the previous result so
     # Freerouting can finish the stragglers with the rest already in place.

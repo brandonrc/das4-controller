@@ -50,7 +50,7 @@ Change them there and regenerate.
 | J1 USB-C, mouth edge | 23.9 | 90.2 | Mouth sticks out ~2 mm past the tab (photo) |
 | J2 USB-A #1, mouth edge | 49.4 | 37.4 | ~5.8 mm past the board edge (photo) |
 | J3 USB-A #2, mouth edge | 49.4 | 18.4 | 19 mm port pitch (photo) |
-| J4 key-matrix connector (bottom side) | 34.6 | 51 – 76.5 | 26 pins (measured). Pitch/type TBD |
+| J4 key-matrix flex pads (bottom side) | 33.1 – 35.6 | 51 – 76.5 | 26 pads, 1.0 mm pitch (26 mm measured); flex soldered on, overlapping from the board edge |
 | ENC1 volume encoder shaft | 10.0 | 5.8 | From the fit-check print (50 mm bar for scale): the body sits about flush with the bottom edge. The first photo trace (2.5) measured the shaft *tip*, which parallax shifted ~3 mm outward. Caliper check welcome |
 | SW1 / SW2 / SW3 (left column) | 3.2 / 3.3 / 3.4 | 70.8 / 54.0 / 37.1 | photo |
 | SW4 (by USB-C) | 19.7 | 75.4 | photo |
@@ -69,10 +69,9 @@ Change them there and regenerate.
 
 ## Still to measure
 
-1. **J4:** pin pitch, one or two rows, and the connector type (header? FFC?). What plugs into it?
-2. **Encoder:** shaft length from the PCB surface. Clicks: 5 per quarter turn, so 20 per full turn (confirm by counting a full turn). No push switch.
-3. **Mounting holes:** real diameters and caliper positions.
-4. Anything above that's marked *photo* and has to fit the case exactly: the USB port positions and the outline steps.
+1. **Encoder:** shaft length from the PCB surface. Clicks: 5 per quarter turn, so 20 per full turn (confirm by counting a full turn). No push switch.
+2. **Mounting holes:** real diameters and caliper positions.
+3. Anything above that's marked *photo* and has to fit the case exactly: the USB port positions and the outline steps.
 
 ## Checking the fit
 

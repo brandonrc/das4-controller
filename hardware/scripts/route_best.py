@@ -20,7 +20,8 @@ HW = os.path.dirname(HERE)
 ROOT = os.path.dirname(HW)
 PCB = os.path.join(HW, "das4-controller.kicad_pcb")
 # (passes, Freerouting update strategy) per parallel run
-VARIANTS = [(36, "greedy"), (44, "global"), (30, "hybrid"), (52, "greedy")]
+# Freerouting is not fully deterministic here, so more variants = more chances
+VARIANTS = [(36, "greedy"), (44, "global"), (30, "hybrid"), (52, "greedy"), (40, "hybrid"), (48, "greedy")]
 RUNS = int(os.environ.get("ROUTE_RUNS", str(len(VARIANTS))))
 COSMETIC = {"silk_overlap", "silk_over_copper", "silk_edge_clearance",
             "malformed_courtyard", "isolated_copper", "starved_thermal"}

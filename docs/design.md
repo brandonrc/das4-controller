@@ -15,7 +15,7 @@ fits the stock case and the stock key-matrix cable.
 | U3 | VIA Labs (VLI) USB 3.0 hub | **Replace** with a USB 2.0 hub |
 | J5 | USB-C, upstream to the PC | Keep (position) |
 | J2, J3 | USB 3.0 Type-A | Keep (position), USB 2.0 is fine |
-| J4 | 26-pin connector to the key-switch PCB (bottom side) | Keep (position + pinout TBD) |
+| J4 | 26-way 1.0 mm flex cable ("CON2") to the key-switch PCB, soldered on (bottom side) | Keep: solder pads, no connector |
 | P1 | Rotary encoder, no push switch, 20 detents (5 per quarter turn) | Keep |
 | SW1–SW5 | Tact switches | Keep, each on its own GPIO |
 | NUM / CAPS / SCROLL | 5 mm THT LEDs | Keep |
@@ -75,8 +75,8 @@ places it on the board. The full parts list with live stock is in [bom.md](bom.m
 | Buttons ×5 | 6 × 6 × 5 mm SMD tact (**hand-soldered**) | Other heights (4.3–10 mm) exist in the same footprint if the case needs them |
 | Lock LEDs ×3 | WS2812D-F5 5 mm THT **RGB** (**hand-soldered**) | Any colour from firmware. One GPIO drives the chain NUM → CAPS → SCROLL through a 2N7002 + 1 kΩ pull-up to 5 V (Basic parts): a 5 V-level signal, **inverted**, so firmware drives the pin inverted (QMK: `WS2812_EXTERNAL_PULLUP`). 100 nF per LED |
 | BOOTSEL / RESET | TS-1187A 5 × 5 mm SMD tact (JLCPCB Basic) | BOOTSEL via 1 kΩ on QSPI_SS; RESET pulls RUN low through 1 kΩ |
-| SWD | 5 test pads | SWCLK, SWDIO, GND, 3V3, RUN |
-| J4 | 26-pin, **placeholder** | Pitch/type unknown, not factory-assembled: reuse the original connector or fit one by hand |
+| SWD + rails | 7 test pads | SWCLK, SWDIO, GND, 3V3, RUN, plus +1V1 and +5V for bring-up |
+| J4 | 26 solder pads, 1.0 mm pitch, 0.6 × 2.5 mm, bottom side at the board edge | The key PCB's flex cable is hot-bar soldered at both ends (no connector), so it's soldered straight onto these by hand, like the original. No part, no cost |
 
 ### GPIO map
 
@@ -128,7 +128,7 @@ Then Freerouting does the rest (`make route`,
 [route.py](../hardware/scripts/route.py)): 4 differently-configured runs in
 parallel, best kept. After autorouting: GND stitching vias wherever the outer
 pours filled, extra vias into any via-less pour piece, then fill.
-Result: 857 track segments, 440 vias; 0 unconnected, 0 non-cosmetic DRC violations (all 4 router variants).
+Result: 794 track segments, 444 vias; 0 unconnected, 0 non-cosmetic DRC violations.
 
 - **4 layers** (signal / GND / power / signal). The hub's upstream link runs
   at USB high speed (480 Mbit/s) and needs 90 Ω pairs over a solid ground
@@ -150,14 +150,15 @@ firmware can give them "fun" functions.
 
 ## Open questions
 
-- [ ] J4 pinout: which of the 26 pins are rows, columns, GND or LED power? Needs photos/continuity checks on the key-switch PCB side.
+- [x] J4 type: a 26-way 1.0 mm flex, soldered at both ends (photos 2026-09-26). The lines all fan into the switch matrix; firmware maps pad *k* to a row or column (a mirrored flex just reverses the table).
 - [ ] Does the key PCB have per-key LEDs or diodes? The diode direction sets the scan direction.
 - [ ] Encoder: confirm 15 mm shaft / 24 detents is close enough (original: ~14 mm, 20 detents).
-- [ ] J4: check with a multimeter that no pin carries 5 V before connecting (they go straight to RP2350 GPIO).
+- [ ] J4 (for firmware, not the order): unpowered continuity checks on the key PCB: flex pads open to its ground/copper areas; press keys to map rows vs columns; diode mode to see if per-key diodes exist. The key PCB is keys only (no lights), so nothing on it drives the lines.
 - [x] Cut JLCPCB fees: 6 Extended types (RP2350B, CH334R, USB-C, inductor, crystal, ME6211 LDO); 11 easy parts are hand-soldered.
 - [x] Independent design review: see [review-2026-09-25.md](review-2026-09-25.md).
 - [x] Route the board.
-- [ ] Layout review (independent reviewer, like the circuit review).
+- [x] Layout reviews: [review-layout-2026-09-25.md](review-layout-2026-09-25.md), [review-layout-2-2026-09-25.md](review-layout-2-2026-09-25.md).
 - [ ] USB-C: only the A4/B9 VBUS pair is wired (B4/A9 boxed in by SW4); fine since plugs tie all VBUS pins.
 - [ ] Caliper pass on everything marked *photo* in [measurements.md](measurements.md).
-- [ ] Case clearance under the board (bottom-side parts and J4 height).
+- [ ] Case clearance under the board (bottom side: only the J4 flex now).
+- [ ] Order with JLCPCB's JLC04161H-7628 stackup (impedance control), which the ~90 Ω USB pair widths assume.

@@ -283,6 +283,16 @@ def leds(board):
         path(board, [(c[0], ty), (d[0] - 0.53, ty), (d[0], ty - 0.53), d], F, "+5V", 0.5)
 
 
+def j4_vias(board):
+    """A via just inboard of each J4 flex pad (bottom side), so matrix lines
+    can arrive on either layer; route.py drops the ones the router didn't use."""
+    for p in board.FindFootprintByReference("J4").Pads():
+        (x, y) = xy(p.GetPosition())
+        x0 = x - pcbnew.ToMM(p.GetSizeX()) / 2       # bbox of a flipped pad reads wrong here
+        path(board, [(x, y), (x0 - 0.45, y)], B, p.GetNetname(), 0.15)
+        via(board, x0 - 0.45, y, p.GetNetname(), 0.45, 0.2)
+
+
 def rect(x0, y0, x1, y1):
     return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
@@ -360,6 +370,29 @@ def keepouts(board):
     return router
 
 
+def pair_via_band(board, nets=("USB_UP_D+", "USB_UP_D-"), gap=0.5):
+    """Router-only: no foreign vias within `gap` of the USB_UP pair (layout
+    review 2: a KM via sat 0.16 mm from D-, its In1 anti-pad under the
+    trace). 0.5 mm keeps a via's In1 anti-pad clear of the trace edge. One
+    rule area per pair segment."""
+    import math
+    areas = []
+    for t in board.GetTracks():
+        if t.GetClass() != "PCB_TRACK" or t.GetNetname() not in nets or t.GetLayer() != F:
+            continue
+        (ax, ay), (bx, by) = xy(t.GetStart()), xy(t.GetEnd())
+        L = math.hypot(bx - ax, by - ay)
+        if L < 0.05:
+            continue
+        r = gap + pcbnew.ToMM(t.GetWidth()) / 2
+        ux, uy = (bx - ax) / L * r, (by - ay) / L * r      # along, then normal
+        nx, ny = -uy, ux
+        areas.append(rule_area(board, [(ax - ux + nx, ay - uy + ny), (bx + ux + nx, by + uy + ny),
+                                       (bx + ux - nx, by + uy - ny), (ax - ux - nx, ay - uy - ny)],
+                               (F, B), tracks=False, pour=False))
+    return areas
+
+
 def critical(board):
     vl = mcu_core(board)
     spine(board, vl)
@@ -367,5 +400,6 @@ def critical(board):
     crystal(board)
     encoder(board)
     leds(board)
+    j4_vias(board)
     usb_up(board)
     cc(board)

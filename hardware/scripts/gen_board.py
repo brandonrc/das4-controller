@@ -28,7 +28,7 @@ from netlist import NETLIST, read_netlist
 HERE = os.path.dirname(os.path.abspath(__file__))
 HW = os.path.dirname(HERE)
 OUT = os.path.join(HW, "das4-controller.kicad_pcb")
-LIBS = {"jlc": os.path.join(HW, "lib", "jlc.pretty")}
+LIBS = {"jlc": os.path.join(HW, "lib", "jlc.pretty"), "das4": os.path.join(HW, "lib", "das4.pretty")}
 KICAD_FP = os.environ.get("KICAD_FOOTPRINT_DIR", "/usr/share/kicad/footprints")
 
 # KiCad page position of our (0, 0); KiCad Y grows downward, ours grows up.
@@ -65,7 +65,7 @@ MECH = {
     "J1": (180, "F", "top", 23.9, 89.4),      # USB-C mouth 1.4 mm past the tab (photo: ~2; front legs vs edge)
     "J2": (90, "F", "right", 49.4, 37.0),     # USB-A 1 (photo: 37.4; shell leg vs edge)
     "J3": (90, "F", "right", 49.4, 18.4),     # USB-A 2 (photo)
-    "J4": (0, "B", "center", 34.6, 63.8),     # key matrix, bottom side (photo)
+    "J4": (0, "B", "center", 34.35, 63.8),    # key-matrix flex solder pads, bottom side, reaching to the edge
     "ENC1": (180, "F", "shaft", 10.0, 5.8),   # volume knob (fit-check print)
     "SW1": (90, "F", "center", 3.35, 70.8),
     "SW2": (90, "F", "center", 3.3, 54.0),
@@ -112,6 +112,7 @@ GROUPS = {
     "R266": (34.4, 28.5, 0), "R267": (34.4, 29.7, 0),
     "TP1": (7.8, 39.0, 0), "TP2": (10.5, 39.0, 0), "TP3": (13.2, 39.0, 0), "TP4": (15.9, 39.0, 0),
     "TP5": (7.8, 41.5, 0),                    # RUN, next to the SWD pads
+    "TP6": (10.5, 41.5, 0), "TP7": (13.2, 41.5, 0),   # +1V1, +5V (bring-up checks)
     "SW6": (31.0, 40.0, 0),                   # BOOTSEL (clear of the USB_UP pair)
     "SW7": (26.8, 8.0, 0), "R303": (22.4, 8.0, 90),         # RESET
     # Hub block, next to the USB-A ports; C7/C6 right at VDD33/V5 (pins 13/12)
