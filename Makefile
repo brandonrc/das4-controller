@@ -4,7 +4,9 @@
 #
 #   make            circuit -> netlist -> board -> renders + fit-check PDF -> DRC
 #   make bom        docs/bom.md with live JLCPCB stock (needs internet)
+#   make pretest    DRC of just the hand layout on the placed board (fast)
 #   make route      autoroute the placed board (slow, ~20 min)
+#   make check      post-route checks DRC can't do
 #   make fab        JLCPCB order files in build/jlcpcb/
 #   make parts      re-fetch JLC footprints/symbols/3D models (needs internet)
 
@@ -19,7 +21,7 @@ KICAD10_3DMODEL_DIR ?= /run/host/var/lib/flatpak/runtime/org.kicad.KiCad.Library
 export KICAD10_3DMODEL_DIR
 RENDER := kicad-cli pcb render --width 1600 --height 2000 --zoom 0.9 --quality high --floor
 
-.PHONY: all netlist board route docs drc bom fab parts clean
+.PHONY: all netlist board pretest route check docs drc bom fab parts clean
 
 # Full rebuild from the circuit: note this regenerates the *unrouted* board.
 # After `make route`, use `make docs drc fab` (they don't rebuild the board).
@@ -44,6 +46,17 @@ docs:
 	$(RENDER) --side bottom -o docs/render-bottom.png $(PCB)
 	kicad-cli pcb render --width 1600 --height 1200 --quality high --floor --perspective --zoom 0.8 --rotate '-45,0,-60' -o docs/render-3d.png $(PCB)
 
+# Hand layout only (critical.py + keep-outs) on the placed board, then DRC:
+# seconds, and it catches clashes before a 20-minute route. Regenerates the
+# placed board, like `route`.
+pretest: board
+	$(PY) hardware/scripts/pretest.py
+	kicad-cli pcb drc --refill-zones --format json -o build/pre_drc.json build/pre.kicad_pcb
+
+# Post-route checks DRC can't do (crystal keep-out, vias on pads)
+check:
+	python3 hardware/scripts/check_layout.py
+
 # Autoroute (Freerouting, several runs in parallel, best kept). Slow: ~20 min.
 # Not part of `all`: it overwrites the placed board with the routed one.
 route: board
@@ -60,8 +73,8 @@ bom: netlist
 fab:
 	$(PY) hardware/scripts/jlc_fab.py
 
-# LCSC parts fetched into hardware/lib with easyeda2kicad (plain Rs/Cs, the
-# AMS1117 and the diode use KiCad's stock footprints)
+# LCSC parts fetched into hardware/lib with easyeda2kicad (plain Rs/Cs and a
+# few SOT parts use KiCad's stock footprints)
 JLC_PARTS := C42415655 C4154405 C165948 C456018 C97521 C20625731 C42411119 \
              C2837531 C318884 C351238 C4154875
 parts: $(DEPS)

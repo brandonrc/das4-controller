@@ -8,4 +8,7 @@ add_executable(das4fw main.c usb_descriptors.c)
 pico_generate_pio_header(das4fw ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
 target_include_directories(das4fw PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(das4fw pico_stdlib hardware_pio hardware_clocks tinyusb_device tinyusb_board)
+# printf -> UART0 (TX/RX pads); USB is the TinyUSB keyboard itself
+pico_enable_stdio_uart(das4fw 1)
+pico_enable_stdio_usb(das4fw 0)
 pico_add_extra_outputs(das4fw)

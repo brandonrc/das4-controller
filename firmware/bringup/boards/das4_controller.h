@@ -7,7 +7,11 @@ pico_board_cmake_set(PICO_PLATFORM, rp2350)
 // QFN-80 package: 48 GPIO. Must be 0 for the B package.
 #define PICO_RP2350A 0
 
-// No default UART on this board (no spare pins brought out); stdio via USB if wanted.
+// UART0 debug console on the TX/RX test pads (left tab): stdio goes here, so
+// printf works even when USB doesn't enumerate. 115200 8N1, 3.3 V levels.
+#define PICO_DEFAULT_UART 0
+#define PICO_DEFAULT_UART_TX_PIN 0
+#define PICO_DEFAULT_UART_RX_PIN 1
 #define PICO_DEFAULT_LED_PIN_INVERTED 0
 
 // W25Q128JV: same QSPI boot2 as the Pico 2 / PGA2350

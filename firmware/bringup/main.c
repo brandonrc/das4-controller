@@ -7,6 +7,7 @@ _Static_assert(PICO_FLASH_SIZE_BYTES == 16*1024*1024, "16MB");
 //   col lines as outputs-low, row lines as inputs with pull-UP (E9-safe).
 // - SW1 on GPIO45 (ADC pin used as digital input, pull-up)
 // - 3x WS2812D on GPIO44 through an inverting 2N7002 -> pad output inverted.
+#include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
@@ -86,6 +87,8 @@ static void hid_task(bool sw1) {
 }
 
 int main(void) {
+    stdio_init_all();
+    printf("\ndas4-controller bring-up firmware\n");
     tusb_init();
     matrix_init();
     gpio_init(DAS4_BTN1_PIN); gpio_set_dir(DAS4_BTN1_PIN, GPIO_IN); gpio_pull_up(DAS4_BTN1_PIN);
@@ -97,6 +100,11 @@ int main(void) {
         tud_task();
         matrix_scan();
         bool sw1 = !gpio_get(DAS4_BTN1_PIN);
+        static bool last_sw1;
+        if (sw1 != last_sw1) {
+            printf("SW1 %s\n", sw1 ? "down" : "up");
+            last_sw1 = sw1;
+        }
         hid_task(sw1);
         if (to_ms_since_boot(get_absolute_time()) - t > 50) {
             t = to_ms_since_boot(get_absolute_time());
